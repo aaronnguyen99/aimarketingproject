@@ -2,8 +2,12 @@ import { useState } from 'react'
 import OpenAI from "openai";
 import Table from './../components/Table';
 import AddPromptModal from './../components/AddPromptModal';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 
 function PromptPage() {
+  const { token } = useAuth();
   const [count, setCount] = useState(0)
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 // IMPORTANT
@@ -19,18 +23,36 @@ const [isModalOpen, setIsModalOpen] = useState(false);
 const [loading, setLoading] = useState(false);
 
 const [company,setCompany]=useState("");
-const [data, setData] = useState([
+const [data, setData] = useState([]);
 
-    ]);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/prompt/getall',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    setData(response.data.data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  useEffect(() => {
+  fetchData();
+}, []);
+
   const fetchResponse = async (newPrompt) => {
     try {
       setLoading(true);
       const res = await client.responses.create({
         model: "gpt-4o",
-        input:"Always return output in valid GitHub-flavored Markdown:\n"+ newPrompt,
+        input:""+ newPrompt,
       });
       const companyCheck = checkCompany(res.output_text); // sync call
-      const idx = data.findIndex((row) => row.prompt ===newPrompt);
+      const idx = data.findIndex((row) => row.content ===newPrompt);
       if(companyCheck>-1){
         updateVisibility(idx,100+"%");
         updatePosition(idx,Math.round((10*(1-1.0*companyCheck/res.output_text.length))* 10) / 10+"/10")
@@ -56,17 +78,25 @@ const [data, setData] = useState([
 
 
     // 🔑 function to add data
-    const addData = (promptText) => {
-      if (!promptText) return; // avoid adding empty prompts
-      const newRow = {
-        prompt: promptText,
-        visibility: "_",
-        position: "_",
-        sentiment: "_",
-        result:"",
-      };
-
-      setData((prev) => [...prev, newRow]);
+    const addData = async (promptText) => {
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/prompt/create",
+          { 
+            content: promptText // 👈 body
+          },
+          { 
+            headers: {
+              Authorization: `Bearer ${token}`, // 👈 headers
+            },
+          }
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+      
+      fetchData();
     };
 
     const updateVisibility = (index, newVisibility) => {
@@ -101,7 +131,11 @@ const [data, setData] = useState([
         + Add
       </button></div>
 
-        <Table data={data} setData={setData}/>
+        <Table 
+        data={data} 
+        setData={setData}
+        fetchData={fetchData}
+        />
 
         <AddPromptModal
         isOpen={isModalOpen}
@@ -120,9 +154,8 @@ const [data, setData] = useState([
         />
         <button
           onClick={async () => {
-            setOutputs([]);
             for (const item of data) {
-              await fetchResponse(item.prompt);
+              await fetchResponse(item.content);
             }
           }}
 

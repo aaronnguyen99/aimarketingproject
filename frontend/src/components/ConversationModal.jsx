@@ -4,7 +4,10 @@ import ReactMarkdown from 'react-markdown';
 
 const ConversationModal = ({ isOpen, onClose ,data}) => {
   const [prompt, setPrompt] = useState("");
-
+const normalizeMarkdown = (text) => {
+  return text.replace(/#+(?=\S)/g, (match) => match + " "); 
+  // ensures "#Heading" → "# Heading"
+};
   if (!isOpen) return null;
 
   return (
@@ -23,13 +26,13 @@ const ConversationModal = ({ isOpen, onClose ,data}) => {
             {/* Prompt */}
             <div className="p-4 border rounded-lg bg-gray-50">
             <p className="font-bold text-lg mb-2">Prompt:</p>
-            <p className="text-gray-700 whitespace-pre-wrap">{data.prompt}</p>
+            <p className="text-gray-700 whitespace-pre-wrap">{data.content}</p>
             </div>
 
             {/* Result */}
-            <div className="p-4 border rounded-lg bg-gray-50">
+            <div className="p-4 border rounded-lg bg-gray-50 prose">
             <p className="font-bold text-lg mb-2">Result:</p>
-            <ReactMarkdown>{data.result}</ReactMarkdown>
+            <ReactMarkdown>{normalizeMarkdown(data.result)}</ReactMarkdown>
             </div>
 
         </div>

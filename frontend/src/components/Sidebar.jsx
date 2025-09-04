@@ -1,14 +1,15 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {routes} from '../routes/index'
 
 export default function Sidebar() {
+  const navigate=useNavigate();
   const navItems = [
-    { name: "Dashboard", icon: "🏠" },
-    { name: "Prompts", icon: "💬" },
-    { name: "Sources", icon: "🌐" },
-    { name: "Competitors", icon: "📊", badge: "10+" },
-    { name: "Company", icon: "🏢" },
+    { name: "Dashboard", icon: "🏠" ,nav:"/dashboard"},
+    { name: "Prompts", icon: "💬" ,nav:"/prompt"},
+    { name: "Sources", icon: "🌐",nav:"/source" },
+    { name: "Competitors", icon: "📊", badge: "10+" ,nav:"/competitor"},
+    { name: "Company", icon: "🏢" ,nav:"/company"},
   ];
 
   return (
@@ -20,7 +21,7 @@ export default function Sidebar() {
             <button
               key={idx}
               className="w-full flex items-center justify-between py-2 px-3 rounded hover:bg-gray-200 transition-colors text-left"
-              onClick={() => console.log(`Clicked ${item.name}`)}
+              onClick={() => navigate(item.nav)}
             >
               <div className="flex items-center space-x-2">
                 <span>{item.icon}</span>
