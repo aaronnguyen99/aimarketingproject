@@ -5,14 +5,14 @@ import { useAuth } from "../contexts/AuthContext";
 
 const Table = (props) => {
   const { token } = useAuth();
-
+  const backendUrl=import.meta.env.VITE_BACKEND_URL
 const [isConversationModalOpen, setIsConversationModalOpen] = useState(false);
 const [selectedRow, setSelectedRow] = useState(null);
 
 const handleRemoveRow = async (idx) => {
       try {
         const response = await axios.delete(
-          "http://localhost:5000/api/prompt/delete/"+idx,
+          backendUrl+"/"+props.type+"/delete/"+idx,
           { 
             headers: {
               Authorization: `Bearer ${token}`, 
@@ -31,10 +31,14 @@ const handleRemoveRow = async (idx) => {
       <table className="w-full bg-white items-center">
         <thead>
           <tr className="bg-gray-100 text-gray-700 uppercase text-sm">
-            <th className="py-3 px-6">Prompt</th>
+            <th className="py-3 px-6">{props.type}</th>
+            <th className="py-3 px-6">
+              {props.isPrompt ? null : "DOMAIN"}
+            </th>
             <th className="py-3 px-6">Visibility</th>
             <th className="py-3 px-6">Position</th>
             <th className="py-3 px-6">Sentiment</th>
+            <th className="py-3 px-6">Options</th>
           </tr>
         </thead>
         <tbody>
@@ -43,11 +47,28 @@ const handleRemoveRow = async (idx) => {
 
             className="border-b hover:bg-gray-50 transition-colors"  
             >
-              <td onClick={() => {
-                    setSelectedRow(row);
-                    setIsConversationModalOpen(true);
-                }}
-                className="py-3 px-6">{row.content}</td>
+              <td onClick={
+                  props.isPrompt
+                    ? () => {
+                        setSelectedRow(row);
+                        setIsConversationModalOpen(true);
+                      }
+                    : undefined
+}
+                  className="py-3 px-6">  {props.isPrompt ? (
+                  row.content
+                ) : (
+                <div className="flex items-center justify-center gap-3 font-bold">
+                  <img
+                    src={`https://www.google.com/s2/favicons?sz=64&domain=${row.domain}`}
+                    alt=""
+                    className="w-6 h-6"
+                      onError={(e) => (e.currentTarget.style.display = "none")}
+                  />
+                  <span>{row.name}</span>
+                </div>
+                )}</td>
+              <td className="py-3 px-6">{props.isPrompt ? null : row.domain}</td>
               <td className="py-3 px-6">{row.visibility}</td>
               <td className="py-3 px-6">{row.position}</td>
               <td className={`py-3 px-6 font-medium`}>{row.sentiment}</td>

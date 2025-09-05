@@ -2,16 +2,16 @@ const CompanyService=require('../services/CompanyService.js')
 
 const createCompany=async(req,res)=>{
     try{
-        const {userId,name,domain,isYourCompany,visibilityScore,count}=req.body        
+        const {name,domain}=req.body        
 
         if(!name)
         {
             return res.status(200).json({
                 status:'Err',
-                message:'The input is required'
+                message:'The input is required expla'
             })
         }
-        const response=await CompanyService.createCompany(req.body)
+        const response=await CompanyService.createCompany(req.body,req.userId)
         console.log('response',response)
         return res.status(200).json(response)
     }catch(e){

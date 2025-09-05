@@ -2,15 +2,42 @@ import React from 'react'
   import axios from 'axios';
 import { useEffect,useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import Table from '../components/Table';
+import AddCompanyModal from '../components/AddCompanyModal';
 
 const CompanyPage = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { token } = useAuth();
-useEffect(() => {
+  const backendUrl=import.meta.env.VITE_BACKEND_URL;
+
+    const addCompany = async (newCompany,domain) => {
+      try {
+        
+        const response = await axios.post(
+          backendUrl+"/company/create",
+          { 
+            "name": newCompany,
+            "domain": domain
+          },
+          { 
+            headers: {
+              Authorization: `Bearer ${token}`, // 👈 headers
+            },
+          }
+        );
+        console.log(newCompany);
+        console.log(response);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+      
+      fetchCompanies();
+    };
   const fetchCompanies = async () => {
     try {
-        const response = await axios.get('http://localhost:5000/api/company/getall',
+        const response = await axios.get(backendUrl+'/company/getall',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -28,7 +55,8 @@ useEffect(() => {
       setLoading(false);
     }
   };
-
+  
+  useEffect(() => {
   fetchCompanies();
 }, []);
 
@@ -37,12 +65,26 @@ useEffect(() => {
 
   return (
     <div>
-      <h2>Companies ({companies.length})</h2>
-      {companies.map(company => (
-        <div key={company._id || company.id}>
-          {company.name || JSON.stringify(company)}
-        </div>
-      ))}
+        <div className="flex self-end">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="max-w-md mb-4 px-4 py-2 bg-black text-white rounded-lg "
+          >
+            + Add
+        </button>
+      </div>
+              <AddCompanyModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              onAdd={addCompany}
+            />
+        <Table 
+        data={companies} 
+        setData={setCompanies}
+        fetchData={fetchCompanies}
+        type="company"
+        isPrompt={false}
+        />
     </div>
   )
 }

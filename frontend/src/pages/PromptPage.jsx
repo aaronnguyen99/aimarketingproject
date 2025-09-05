@@ -10,6 +10,7 @@ function PromptPage() {
   const { token } = useAuth();
   const [count, setCount] = useState(0)
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  const backendUrl=import.meta.env.VITE_BACKEND_URL
 // IMPORTANT
 // FIX LEAKING API BEFORE PUSHING
 // USE EXPRESS JS
@@ -27,7 +28,7 @@ const [data, setData] = useState([]);
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/prompt/getall',
+      const response = await axios.get(backendUrl+'/prompt/getall',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -49,7 +50,7 @@ const [data, setData] = useState([]);
       setLoading(true);
       const res = await client.responses.create({
         model: "gpt-4o",
-        input:""+ newPrompt,
+        input:newPrompt+". After answering, include several sources where the answers from (website link is best).",
       });
       const companyCheck = checkCompany(res.output_text); // sync call
       const idx = data.findIndex((row) => row.content ===newPrompt);
@@ -81,7 +82,7 @@ const [data, setData] = useState([]);
     const addData = async (promptText) => {
       try {
         const response = await axios.post(
-          "http://localhost:5000/api/prompt/create",
+          backendUrl+"/prompt/create",
           { 
             content: promptText // 👈 body
           },
@@ -121,8 +122,8 @@ const [data, setData] = useState([]);
       );
     };
   return (
-    <div className="p-5">
-      <header className="bg-white min-h-screen flex flex-col items-center justify-evenly text-black text-[calc(10px+2vmin)] m-0">
+    <div className="p-2">
+      <header className="bg-white min-h-screen flex flex-col items-center text-black text-lg">
         <div className="flex self-end">
         <button
         onClick={() => setIsModalOpen(true)}
@@ -135,6 +136,8 @@ const [data, setData] = useState([]);
         data={data} 
         setData={setData}
         fetchData={fetchData}
+        type="prompt"
+        isPrompt={true}
         />
 
         <AddPromptModal

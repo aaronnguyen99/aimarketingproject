@@ -1,12 +1,12 @@
 const Company=  require("../schema/CompanyModel")
 
-const createCompany = (newCompany) => {
+const createCompany = (newCompany,userId) => {
     return new Promise(async(resolve,reject) => {
-        const {userId,name,domain,isYourCompany,visibilityScore,count}=newCompany        
+        const {name,domain}=newCompany        
 
         try{
             const newCompany=await Company.create({
-                userId,name,domain,isYourCompany,visibilityScore,count
+                userId,name,domain
             })
             if(newCompany)
             {
