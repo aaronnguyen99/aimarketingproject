@@ -1,5 +1,8 @@
 const PromptService=require('../services/PromptService.js')
-
+const OpenAI = require("openai");
+const client = new OpenAI({
+  apiKey: "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",
+});
 const createPrompt=async(req,res)=>{
     try{
         const {content}=req.body        
@@ -70,9 +73,67 @@ const getAllPrompt=async(req,res)=>{
         })
     }
 }
+
+const analyzeprompt = async (req, res) => {
+  try {
+    const response = await PromptService.getAllPrompt(req.userId);
+    const prompts = response.data;
+
+    // Process all prompts concurrently for maximum speed
+    const processPrompt = async (item) => {
+      try {
+        // Call OpenAI with correct API structure
+        const completion = await client.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "user", 
+              content: item.content + " After answering, include several sources where the answers are from (website link is best)."
+            }
+          ]
+        });
+
+        const output = completion.choices[0].message.content;
+
+        // Update prompt in database
+        const updated = await PromptService.updatePrompt(
+          item._id,
+          { snapshot: output, content: item.content }
+        );
+
+        return updated;
+
+      } catch (err) {
+        console.error("Error analyzing prompt:", err);
+        return null; // Return null for failed items
+      }
+    };
+
+    // Process all prompts simultaneously
+    const results = await Promise.all(
+      prompts.map(processPrompt)
+    );
+
+    // Filter out failed requests (null values)
+    const updatedPrompts = results.filter(item => item !== null);
+
+    return res.status(200).json({
+      status: "OK",
+      message: "Analysis complete",
+      data: updatedPrompts,
+    });
+
+  } catch (e) {
+    return res.status(500).json({
+      status: "Error",
+      message: e.message,
+    });
+  }
+};
 module.exports={
     createPrompt,
     updatePrompt,
     deletePrompt,
-    getAllPrompt
+    getAllPrompt,
+    analyzeprompt
 }

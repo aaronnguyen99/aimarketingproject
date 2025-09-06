@@ -32,7 +32,7 @@ const normalizeMarkdown = (text) => {
             {/* Result */}
             <div className="p-4 border rounded-lg bg-gray-50 prose">
             <p className="font-bold text-lg mb-2">Result:</p>
-            <ReactMarkdown>{normalizeMarkdown(data.result)}</ReactMarkdown>
+            <ReactMarkdown>{normalizeMarkdown(data.snapshot)}</ReactMarkdown>
             </div>
 
         </div>

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import OpenAI from "openai";
 import Table from './../components/Table';
 import AddPromptModal from './../components/AddPromptModal';
 import { useEffect } from 'react';
@@ -8,18 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 function PromptPage() {
   const { token } = useAuth();
-  const [count, setCount] = useState(0)
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
   const backendUrl=import.meta.env.VITE_BACKEND_URL
-// IMPORTANT
-// FIX LEAKING API BEFORE PUSHING
-// USE EXPRESS JS
-//
-const client = new OpenAI({ apiKey:apiKey , dangerouslyAllowBrowser: true  });
-//
-//
-//
-//
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [loading, setLoading] = useState(false);
 
@@ -45,29 +33,32 @@ const [data, setData] = useState([]);
   fetchData();
 }, []);
 
-  const fetchResponse = async (newPrompt) => {
-    try {
-      setLoading(true);
-      const res = await client.responses.create({
-        model: "gpt-4o",
-        input:newPrompt+". After answering, include several sources where the answers from (website link is best).",
-      });
-      const companyCheck = checkCompany(res.output_text); // sync call
-      const idx = data.findIndex((row) => row.content ===newPrompt);
-      if(companyCheck>-1){
-        updateVisibility(idx,100+"%");
-        updatePosition(idx,Math.round((10*(1-1.0*companyCheck/res.output_text.length))* 10) / 10+"/10")
+const fetchResponse = async () => {
+  try {
+    setLoading(true);
+    const response = await axios.post(
+      backendUrl + '/prompt/analyze',
+      {}, // Empty data object since you're not sending any body data
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-      else{
-        updateVisibility(idx,0+"%");
-      }
-      updateConversation(idx,res.output_text)
-    } catch (err) {
-      console.error("Error fetching response:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    );
+    
+    // Handle the response
+    console.log('Analysis complete:', response);
+    // You might want to update some state with the response
+    // setAnalysisResult(response.data);
+      fetchData();
+
+  } catch (err) {
+    console.error("Error fetching response:", err);
+    // Handle error (show toast, set error state, etc.)
+  } finally {
+    setLoading(false);
+  }
+};
 
   const checkCompany=(output)=>{
     if(company.trim().length===0){
@@ -84,11 +75,11 @@ const [data, setData] = useState([]);
         const response = await axios.post(
           backendUrl+"/prompt/create",
           { 
-            content: promptText // 👈 body
+            content: promptText 
           },
           { 
             headers: {
-              Authorization: `Bearer ${token}`, // 👈 headers
+              Authorization: `Bearer ${token}`, 
             },
           }
         );
@@ -104,20 +95,6 @@ const [data, setData] = useState([]);
       setData((prev) =>
         prev.map((row, i) =>
           i === index ? { ...row, visibility: newVisibility } : row
-        )
-      );
-    };
-    const updatePosition = (index, newPosition) => {
-      setData((prev) =>
-        prev.map((row, i) =>
-          i === index ? { ...row, position: newPosition } : row
-        )
-      );
-    };
-    const updateConversation = (index, newResult) => {
-      setData((prev) =>
-        prev.map((row, i) =>
-          i === index ? { ...row, result: newResult } : row
         )
       );
     };
@@ -156,11 +133,7 @@ const [data, setData] = useState([]);
                transition duration-200"
         />
         <button
-          onClick={async () => {
-            for (const item of data) {
-              await fetchResponse(item.content);
-            }
-          }}
+          onClick={() => fetchResponse()}
 
           disabled={loading}
           className={`px-4 py-2 rounded-lg font-medium transition max-w-md
