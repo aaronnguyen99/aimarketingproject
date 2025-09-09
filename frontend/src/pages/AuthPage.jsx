@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const AuthPages = () => {
 const{login} =useAuth();
   const navigate = useNavigate();
+  const backendUrl=import.meta.env.VITE_BACKEND_URL
 
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -32,13 +33,13 @@ const{login} =useAuth();
     setError('');
 
     try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+      const endpoint = isLogin ? '/auth/login' : '/auth/signup';
       const payload = isLogin 
         ? { email: formData.email, password: formData.password }
         : formData;
 
       // Replace with your actual API call
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+      const response = await fetch(backendUrl+`${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

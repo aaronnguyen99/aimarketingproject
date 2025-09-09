@@ -82,18 +82,18 @@ const analyzeprompt = async (req, res) => {
     // Process all prompts concurrently for maximum speed
     const processPrompt = async (item) => {
       try {
-        // Call OpenAI with correct API structure
-        const completion = await client.chat.completions.create({
-          model: "gpt-4o",
-          messages: [
+                    // Call OpenAI with correct API structure
+            const completion = await client.responses.create({
+                    model: "gpt-5o",
+          tools: [
             {
-              role: "user", 
-              content: item.content + " After answering, include several sources where the answers are from (website link is best)."
+              type: "web_search", 
             }
-          ]
+          ],
+          input:item.content,
         });
 
-        const output = completion.choices[0].message.content;
+        const output = completion.output_text || "No output";
 
         // Update prompt in database
         const updated = await PromptService.updatePrompt(

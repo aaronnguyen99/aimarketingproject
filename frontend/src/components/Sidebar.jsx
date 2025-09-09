@@ -8,8 +8,7 @@ export default function Sidebar() {
     { name: "Dashboard", icon: "🏠" ,nav:"/dashboard"},
     { name: "Prompts", icon: "💬" ,nav:"/prompt"},
     { name: "Sources", icon: "🌐",nav:"/source" },
-    { name: "Competitors", icon: "📊", badge: "10+" ,nav:"/competitor"},
-    { name: "Company", icon: "🏢" ,nav:"/company"},
+    { name: "Schools", icon: "🏢" ,nav:"/company"},
   ];
 
   return (

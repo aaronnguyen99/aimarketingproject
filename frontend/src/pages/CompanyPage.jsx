@@ -12,6 +12,23 @@ const CompanyPage = () => {
   const { token } = useAuth();
   const backendUrl=import.meta.env.VITE_BACKEND_URL;
 
+    const fetchScore = async (companyId) => {
+    try {
+        const response = await axios.get(backendUrl+'/score/getaverage?companyId='+companyId,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    console.log('Companies array:', response.data.data);
+    return response.data.data;
+    
+    // Extract the nested data array
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
     const addCompany = async (newCompany,domain) => {
       try {
         
@@ -78,13 +95,15 @@ const CompanyPage = () => {
               onClose={() => setIsModalOpen(false)}
               onAdd={addCompany}
             />
+        <div>   
         <Table 
         data={companies} 
         setData={setCompanies}
         fetchData={fetchCompanies}
         type="company"
+        fetchScore={fetchScore}
         isPrompt={false}
-        />
+        /></div> 
     </div>
   )
 }

@@ -4,6 +4,7 @@ import AddPromptModal from './../components/AddPromptModal';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import DropdownMenu from '../components/DropdownMenu';
 
 function PromptPage() {
   const { token } = useAuth();
@@ -11,9 +12,62 @@ function PromptPage() {
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [loading, setLoading] = useState(false);
 
-const [company,setCompany]=useState("");
-const [data, setData] = useState([]);
+const [company,setCompany]=useState([]);
+  const [companies, setCompanies] = useState([]);
 
+const [data, setData] = useState([]);
+const [score, setScore] = useState([]);
+  const fetchScore = async (companyId) => {
+    try {
+    //   const response = await axios.get(backendUrl+'/score/getaverage?promptId='+promptId+'&&companyId='+companyId,
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     }
+    //   );
+    // setScore(response.data.data[0]);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const generateScoreAll = async () => {
+    try {
+        const response = await axios.post(backendUrl+'/score/analyze',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    
+    // Extract the nested data array    
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    
+  };  const fetchCompanies = async () => {
+    try {
+        const response = await axios.get(backendUrl+'/company/getall',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    console.log('Full response:', response.data);
+    console.log('Companies array:', response.data.data);
+    
+    // Extract the nested data array
+    setCompanies(response.data.data); // Note the double .data
+    
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    
+  };
   const fetchData = async () => {
     try {
       const response = await axios.get(backendUrl+'/prompt/getall',
@@ -31,6 +85,8 @@ const [data, setData] = useState([]);
 
   useEffect(() => {
   fetchData();
+  fetchCompanies();
+
 }, []);
 
 const fetchResponse = async () => {
@@ -51,7 +107,7 @@ const fetchResponse = async () => {
     // You might want to update some state with the response
     // setAnalysisResult(response.data);
       fetchData();
-
+      generateScoreAll();
   } catch (err) {
     console.error("Error fetching response:", err);
     // Handle error (show toast, set error state, etc.)
@@ -59,16 +115,6 @@ const fetchResponse = async () => {
     setLoading(false);
   }
 };
-
-  const checkCompany=(output)=>{
-    if(company.trim().length===0){
-      return;
-    }
-    return output.toLowerCase().indexOf(company.toLowerCase());
-
-  }
-
-
     // 🔑 function to add data
     const addData = async (promptText) => {
       try {
@@ -91,47 +137,40 @@ const fetchResponse = async () => {
       fetchData();
     };
 
-    const updateVisibility = (index, newVisibility) => {
-      setData((prev) =>
-        prev.map((row, i) =>
-          i === index ? { ...row, visibility: newVisibility } : row
-        )
-      );
-    };
+
   return (
     <div className="p-2">
       <header className="bg-white min-h-screen flex flex-col items-center text-black text-lg">
-        <div className="flex self-end">
+        
+        <div className="flex justify-between items-center w-full mb-4">
+        <div>
+          <DropdownMenu
+          data={companies}
+          setData={setCompany}
+          />
+        </div>
+        <div>
         <button
         onClick={() => setIsModalOpen(true)}
         className="max-w-md mb-4 px-4 py-2 bg-black text-white rounded-lg "
       >
         + Add
-      </button></div>
-
+      </button></div></div>
+      <div>
         <Table 
         data={data} 
         setData={setData}
         fetchData={fetchData}
         type="prompt"
         isPrompt={true}
+        fetchScore={fetchScore}
         />
-
+      </div>
         <AddPromptModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAdd={addData}
       />
-        <input
-          type="text"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
-          placeholder="Enter organization name"
-          className="max-w-md w-full px-6 py-2 rounded-xl border border-gray-300 
-               shadow-sm text-gray-700 placeholder-gray-400
-               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-               transition duration-200"
-        />
         <button
           onClick={() => fetchResponse()}
 
