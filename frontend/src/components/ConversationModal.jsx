@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 const ConversationModal = ({ isOpen, onClose ,data}) => {
   const [prompt, setPrompt] = useState("");
 const normalizeMarkdown = (text) => {
+  console.log(text);
   return text.replace(/#+(?=\S)/g, (match) => match + " "); 
   // ensures "#Heading" → "# Heading"
 };

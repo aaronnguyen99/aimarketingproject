@@ -48,7 +48,7 @@ const getAverageScore = async (req, res) => {
         if (promptId) filter.promptId = promptId;
         if (companyId) filter.companyId = companyId;
         const allScore = await Score.find(filter);
-        if(!allScore){
+        if(allScore.length===0){
             return res.status(200).json({
             status: "OK",
             message: "Empty",
@@ -87,6 +87,10 @@ const getScoreDashboard = async (req, res) => {
         message: "companyId is required",
       });
     }
+    let formatTime="%Y-%m-%d"
+    if(time==="1"||time==="2"){
+      formatTime+=" %H:00";
+    }
         const sevenDaysAgo = new Date(Date.now() - time * 24 * 60 * 60 * 1000);
     const dailyAverages = await Score.aggregate([
       {
@@ -102,7 +106,7 @@ const getScoreDashboard = async (req, res) => {
         $group: {
           _id: {
             $dateToString: {
-              format: "%Y-%m-%d",
+              format: formatTime,
               date: "$createdAt"
             }
           },
@@ -127,44 +131,18 @@ const getScoreDashboard = async (req, res) => {
     });
   }
 };
-const getLastScore = async (req, res) => {
-  try {
-    const { promptId,companyId } = req.query; // 👈 comes from /api/scores?promptId=123
-
-    if (!promptId||!companyId) {
-      return res.status(400).json({
-        status: "Err",
-        message: "promptId and companyId are required",
-      });
-    }
-    const latestScore = await Score.findOne({ promptId, companyId}).sort({ createdAt: -1 });
-    return res.status(200).json({
-      status: "OK",
-      message: "Get All Score Success",
-      data: latestScore
-    });
-  } catch (e) {
-    return res.status(500).json({
-      status: "Err",
-      message: e.message || "Server error",
-    });
-  }
-};
 
 const analyzeCompanyScores = async (req, res) => {
   try {
-    // Get all prompts with snapshots for the user
-    const promptsResponse = await PromptService.getAllPrompt(req.userId);
-    const prompts = promptsResponse.data.filter(prompt => prompt.snapshot);
 
     // Get all companies
     const companiesResponse = await CompanyService.getAllCompany(req.userId);
     const companies = companiesResponse.data;
 
-    if (!prompts.length || !companies.length) {
+    if ( !companies.length) {
       return res.status(200).json({
         status: "OK",
-        message: "No prompts or companies found",
+        message: "No companies found",
         data: { scores: [], analyzed: 0 }
       });
     }
@@ -172,16 +150,18 @@ const analyzeCompanyScores = async (req, res) => {
     const scores = [];
 
     // Analyze each snapshot against each company
-    for (const prompt of prompts) {
-      const snapshot = prompt.snapshot.toLowerCase(); // Convert to lowercase for better matching
-      
-      for (const company of companies) {
+    for (const company of companies) {
+      // Convert to lowercase for better matching
+          const promptsResponse = await PromptService.getAllPromptCompany(company);
+            const prompts = promptsResponse.data.filter(prompt => prompt.snapshot);
+      for (const prompt of prompts) {
+         const snapshot = prompt.snapshot.toLowerCase();
         const companyName = company.name.toLowerCase();
         const check=snapshot.indexOf(companyName);
 
         // Check if company name exists in snapshot
         if (check!==-1) {
-            const position=parseInt(100-check*100/snapshot.length)/10.0;
+            const position = (1 - parseFloat(check) / snapshot.length) * 10;
             scores.push({
                 "promptId":prompt._id,
                 "companyId":company._id,
@@ -210,7 +190,6 @@ const analyzeCompanyScores = async (req, res) => {
         data: {
           scores: createdScores,
           analyzed: scores.length,
-          prompts: prompts.length,
           companies: companies.length
         }
       });
@@ -235,7 +214,6 @@ module.exports={
     createScore,
     getAverageScore,
     analyzeCompanyScores,
-    getLastScore,
     getScoreDashboard
 
 }

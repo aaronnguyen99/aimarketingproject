@@ -1,13 +1,14 @@
 const PromptService=require('../services/PromptService.js')
+const SourceService=require('../services/SourceService.js')
 const OpenAI = require("openai");
 const client = new OpenAI({
   apiKey: "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",
 });
 const createPrompt=async(req,res)=>{
     try{
-        const {content}=req.body        
+        const {content,companyId}=req.body        
 
-        if(!content)
+        if(!content||!companyId)
         {
             return res.status(200).json({
                 status:'Err',
@@ -73,7 +74,27 @@ const getAllPrompt=async(req,res)=>{
         })
     }
 }
-
+const getAllPromptCompany=async(req,res)=>{
+    try{
+        const companyId=req.params.id;
+        if(!companyId)
+        {
+            return res.status(200).json({
+                status:'ERR',
+                message:'promptId is required'
+            })
+        }
+        const response=await PromptService.getAllPromptCompany(companyId);
+        return res.status(200).json(response)
+    }catch(e){
+        return res.status(404).json({
+            message:e
+        })
+    }
+}
+function extractBrackets(text) {
+  return (text.match(/\[([^\]]*)\]/g) || []).map(match => match.slice(1, -1));
+}
 const analyzeprompt = async (req, res) => {
   try {
     const response = await PromptService.getAllPrompt(req.userId);
@@ -84,7 +105,7 @@ const analyzeprompt = async (req, res) => {
       try {
                     // Call OpenAI with correct API structure
             const completion = await client.responses.create({
-                    model: "gpt-5o",
+                    model: "gpt-5",
           tools: [
             {
               type: "web_search", 
@@ -94,6 +115,11 @@ const analyzeprompt = async (req, res) => {
         });
 
         const output = completion.output_text || "No output";
+        const source=extractBrackets(output);
+
+            for(const url of source){
+                await SourceService.update(req.userId,url);
+            }
 
         // Update prompt in database
         const updated = await PromptService.updatePrompt(
@@ -135,5 +161,6 @@ module.exports={
     updatePrompt,
     deletePrompt,
     getAllPrompt,
-    analyzeprompt
+    analyzeprompt,
+    getAllPromptCompany
 }

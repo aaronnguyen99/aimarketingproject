@@ -5,29 +5,38 @@ import {routes} from '../routes/index'
 export default function Sidebar() {
   const navigate=useNavigate();
   const navItems = [
-    { name: "Dashboard", icon: "🏠" ,nav:"/dashboard"},
+    { name: "Dashboard", icon: "📊" ,nav:"/dashboard"},
     { name: "Prompts", icon: "💬" ,nav:"/prompt"},
     { name: "Sources", icon: "🌐",nav:"/source" },
     { name: "Schools", icon: "🏢" ,nav:"/company"},
   ];
 
   return (
-    <div className="w-64 min-h-screen bg-gray-100 border-r border-gray-300 p-4 flex flex-col justify-between">
+    <div className="w-64 min-h-screen bg-gray-100 border-r border-gray-200 p-6 flex flex-col justify-between shadow-sm">
       <div>
-        <h1 className="text-xl font-bold mb-6">Company name</h1>
-        <nav className="space-y-2">
+        <h1 className="text-2xl font-semibold text-gray-800 mb-8 tracking-tight">
+          MeiryoAI
+        </h1>
+        <nav className="space-y-1">
           {navItems.map((item, idx) => (
             <button
               key={idx}
-              className="w-full flex items-center justify-between py-2 px-3 rounded hover:bg-gray-200 transition-colors text-left"
+              className="w-full flex items-center justify-between py-2.5 px-3 rounded-lg transition-colors text-left group"
               onClick={() => navigate(item.nav)}
             >
-              <div className="flex items-center space-x-2">
-                <span>{item.icon}</span>
-                <span>{item.name}</span>
+              <div className="w-full flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-200 transition-colors text-left group ">
+                <div className="text-gray-700 font-medium group-hover:text-gray-900">
+                  {item.name}
+                </div>
+
+                {/* Right side: icon */}
+                <div className="text-gray-500 group-hover:text-gray-700 filter grayscale self-center">
+                  {item.icon}
+                </div>
+
               </div>
               {item.badge && (
-                <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs">
+                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
                   {item.badge}
                 </span>
               )}
@@ -35,14 +44,6 @@ export default function Sidebar() {
           ))}
         </nav>
       </div>
-
-      {/* <div className="mt-6 text-center text-sm text-gray-500">
-        <p>You're on trial</p>
-        <p className="font-medium">3 days remaining</p>
-        <button className="mt-2 text-blue-600 hover:underline">
-          Select a plan
-        </button>
-      </div> */}
     </div>
   );
 }

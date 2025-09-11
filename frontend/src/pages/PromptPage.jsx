@@ -62,15 +62,18 @@ const [score, setScore] = useState([]);
     
     // Extract the nested data array
     setCompanies(response.data.data); // Note the double .data
-    
+    if(companies){
+      setCompany(companies[0]);
+    }
     } catch (error) {
       console.error('Error:', error);
     }
     
   };
-  const fetchData = async () => {
+  const fetchData = async (companyId) => {
     try {
-      const response = await axios.get(backendUrl+'/prompt/getall',
+      console.log(company);
+      const response = await axios.get(backendUrl+'/prompt/getallcompany/'+companyId,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -84,11 +87,14 @@ const [score, setScore] = useState([]);
   };
 
   useEffect(() => {
-  fetchData();
   fetchCompanies();
 
 }, []);
-
+  useEffect(() => {
+  if (company && company._id) {
+    fetchData(company._id);
+  }
+}, [company]);
 const fetchResponse = async () => {
   try {
     setLoading(true);
@@ -106,7 +112,7 @@ const fetchResponse = async () => {
     console.log('Analysis complete:', response);
     // You might want to update some state with the response
     // setAnalysisResult(response.data);
-      fetchData();
+      fetchData(company._id);
       generateScoreAll();
   } catch (err) {
     console.error("Error fetching response:", err);
@@ -118,9 +124,11 @@ const fetchResponse = async () => {
     // 🔑 function to add data
     const addData = async (promptText) => {
       try {
+        console.log(company);
         const response = await axios.post(
           backendUrl+"/prompt/create",
           { 
+            companyId:company._id,
             content: promptText 
           },
           { 
@@ -134,7 +142,7 @@ const fetchResponse = async () => {
         console.error("Error:", error);
       }
       
-      fetchData();
+      fetchData(company._id);
     };
 
 
@@ -147,6 +155,9 @@ const fetchResponse = async () => {
           <DropdownMenu
           data={companies}
           setData={setCompany}
+          selectedItem={company}
+          displayKey = "name" // Which property to display
+          valueKey = "_id" 
           />
         </div>
         <div>

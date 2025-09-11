@@ -78,7 +78,6 @@ const CompanyPage = () => {
 }, []);
 
  if (loading) return <div>Loading...</div>;
-  if (!companies.length) return <div>No companies found</div>;
 
   return (
     <div>

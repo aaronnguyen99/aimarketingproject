@@ -2,6 +2,7 @@ const mongoose=require('mongoose')
 const promptSchema=new mongoose.Schema(
     {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+        companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
         content:{type:String,required:true},
         snapshot:{type:String,default:"No existing snapshot."},
 

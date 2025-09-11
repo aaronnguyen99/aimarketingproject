@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import SortTable from '../components/SortTable';
 
 const Dashboard = () => {
 
@@ -40,7 +41,7 @@ useEffect(() => {
     const fetchScore = async () => {
     try {
           const promises = companies.map(company => 
-        axios.get(backendUrl+'/score/getdashboard?companyId='+company._id+'&time=3',
+        axios.get(backendUrl+'/score/getdashboard?companyId='+company._id+'&time=2',
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
@@ -68,7 +69,7 @@ useEffect(() => {
     );
 
     setChart(chartData);    
-              console.log('Full response:', chartData);
+              console.log('chart data:', chartData);
     // Extract the nested data array
     } catch (error) {
       console.error('Error:', error);
@@ -99,7 +100,12 @@ useEffect(() => {
               </BarChart>
             </ResponsiveContainer>
           </div> */}
-
+          <SortTable
+          data={companies}
+          columns={[  { key: 'name', title: 'School name' },
+                      { key: 'value', title: 'Value' }]}
+          
+          />
           {/* Line Chart */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Visibility Trend</h3>
