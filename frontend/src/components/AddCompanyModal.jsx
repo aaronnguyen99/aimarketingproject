@@ -26,9 +26,9 @@ const AddCompanyModal = ({ isOpen, onClose, onAdd }) => {
         <textarea
           value={company}
           onChange={(e) => setCompany(e.target.value)}
-          placeholder="Enter company name"
+          placeholder="Enter company name (required)"
           maxLength={200}
-          className="w-full h-32 px-4 py-3 rounded-lg border border-gray-300 shadow-sm
+          className="w-full h-15 px-4 py-3 rounded-lg border border-gray-300 shadow-sm
                      text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
                      focus:border-blue-500 transition duration-200 resize-none break-words"
         />
@@ -37,7 +37,7 @@ const AddCompanyModal = ({ isOpen, onClose, onAdd }) => {
           onChange={(e) => setDomain(e.target.value)}
           placeholder="Enter company website"
           maxLength={200}
-          className="w-full h-32 px-4 py-3 rounded-lg border border-gray-300 shadow-sm
+          className="w-full h-15 px-4 py-3 rounded-lg border border-gray-300 shadow-sm
                      text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
                      focus:border-blue-500 transition duration-200 resize-none break-words"
         />

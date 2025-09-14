@@ -43,12 +43,12 @@ const SortTable = ({
       <table className="min-w-full divide-y divide-gray-200">
         <thead className={headerClassName}>
           <tr>
-            <th></th>
+            <th></th><th></th>
             {columns.map((column, index) => (
               <th 
                 key={column.key || index}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => column.sortable !== false && handleSort(column.key)}
+                // onClick={() => column.sortable !== false && handleSort(column.key)}
               >
                 <div className="flex items-center space-x-1">
                   <span>{column.key || column.header}</span>
@@ -64,6 +64,16 @@ const SortTable = ({
           {sortedData.map((row, rowIndex) => (
             <tr key={row._id || rowIndex} className={rowClassName}>
               <td>{rowIndex+1}</td>
+              <td>
+                <div className="flex items-center justify-center gap-3 font-bold">
+                  <img
+                    src={`https://www.google.com/s2/favicons?sz=64&domain=${row.url||row.domain}`}
+                    alt=""
+                    className="w-6 h-6"
+                      onError={(e) => (e.currentTarget.style.display = "none")}
+                  />                
+                  </div>
+                </td>
               {columns.map((column, colIndex) => (
                 
                 <td 

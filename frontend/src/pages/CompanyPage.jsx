@@ -80,6 +80,15 @@ const CompanyPage = () => {
  if (loading) return <div>Loading...</div>;
 
   return (
+        <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Schools</h1>
+          <p className="text-gray-600 mt-2">Add schools and organizations you want to keep track.</p>
+        </div>
+
+
     <div>
         <div className="flex self-end">
           <button
@@ -103,7 +112,9 @@ const CompanyPage = () => {
         fetchScore={fetchScore}
         isPrompt={false}
         /></div> 
+    </div>      
     </div>
+    </div>  
   )
 }
 

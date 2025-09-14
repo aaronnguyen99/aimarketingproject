@@ -88,9 +88,7 @@ const getScoreDashboard = async (req, res) => {
       });
     }
     let formatTime="%Y-%m-%d"
-    if(time==="1"||time==="2"){
-      formatTime+=" %H:00";
-    }
+
         const sevenDaysAgo = new Date(Date.now() - time * 24 * 60 * 60 * 1000);
     const dailyAverages = await Score.aggregate([
       {
@@ -119,7 +117,6 @@ const getScoreDashboard = async (req, res) => {
         $sort: { "_id": 1 }
       }
     ]);
-    console.log(dailyAverages);
     return res.status(200).json({
       success: true,
       data: dailyAverages

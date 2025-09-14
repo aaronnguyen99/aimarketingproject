@@ -62,8 +62,8 @@ const handleRemoveRow = async (idx) => {
       props.fetchData();
 };
   return (
-    <div className="w-full overflow-x-auto rounded-2xl shadow-md">
-      <table className="w-full bg-white items-center">
+    <div className="w-full text-left rounded-2xl shadow-md">
+      <table className="w-full bg-white ">
         <thead>
           <tr className="bg-gray-100 text-gray-700 uppercase text-sm">
             <th className="py-3 px-6">{props.type}</th>
@@ -80,7 +80,7 @@ const handleRemoveRow = async (idx) => {
           {props.data.map((row) => (
             <tr key={row._id} 
 
-            className="border-b hover:bg-gray-50 transition-colors"  
+            className="border-b-1 border-b-gray-100 hover:bg-gray-50 transition-colors  divide-x divide-gray-200"  
             >
               <td onClick={
                   props.isPrompt
@@ -93,7 +93,7 @@ const handleRemoveRow = async (idx) => {
                   className="py-3 px-6">  {props.isPrompt ? (
                   row.content
                 ) : (
-                <div className="flex items-center justify-center gap-3 font-bold">
+                <div className="flex gap-3 font-bold">
                   <img
                     src={`https://www.google.com/s2/favicons?sz=64&domain=${row.domain}`}
                     alt=""
@@ -104,11 +104,11 @@ const handleRemoveRow = async (idx) => {
                 </div>
                 )}</td>
               <td className="py-3 px-6">{props.isPrompt ? null : row.domain}</td>
-              <td className="py-3 px-6 flex items-center justify-center">
+              <td className="py-3 px-6 flex">
                 <span>{!props.isPrompt ? scores[row._id] +"%" : null}</span>
               </td>
-              <td className={`py-3 px-6 font-medium items-center`}>  <span>{!props.isPrompt ? position[row._id]  : null}</span></td>
-              <td className="py-3 px-6 flex items-center justify-center"> 
+              <td className="py-3 px-6 font-medium">  <span>{!props.isPrompt ? position[row._id]  : null}</span></td>
+              <td className="py-3 px-6 flex items-center "> 
 
                 <button
                   onClick={() => handleRemoveRow(row._id)}
