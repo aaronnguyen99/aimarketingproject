@@ -6,9 +6,9 @@ const client = new OpenAI({
 });
 const createPrompt=async(req,res)=>{
     try{
-        const {content,companyId}=req.body        
+        const {content}=req.body        
 
-        if(!content||!companyId)
+        if(!content)
         {
             return res.status(200).json({
                 status:'Err',
@@ -67,24 +67,6 @@ const deletePrompt=async(req,res)=>{
 const getAllPrompt=async(req,res)=>{
     try{
         const response=await PromptService.getAllPrompt(req.userId)
-        return res.status(200).json(response)
-    }catch(e){
-        return res.status(404).json({
-            message:e
-        })
-    }
-}
-const getAllPromptCompany=async(req,res)=>{
-    try{
-        const companyId=req.params.id;
-        if(!companyId)
-        {
-            return res.status(200).json({
-                status:'ERR',
-                message:'promptId is required'
-            })
-        }
-        const response=await PromptService.getAllPromptCompany(companyId);
         return res.status(200).json(response)
     }catch(e){
         return res.status(404).json({
@@ -161,6 +143,5 @@ module.exports={
     updatePrompt,
     deletePrompt,
     getAllPrompt,
-    analyzeprompt,
-    getAllPromptCompany
+    analyzeprompt
 }

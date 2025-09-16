@@ -135,22 +135,22 @@ const analyzeCompanyScores = async (req, res) => {
     // Get all companies
     const companiesResponse = await CompanyService.getAllCompany(req.userId);
     const companies = companiesResponse.data;
+    const promptsResponse = await PromptService.getAllPrompt(req.userId);
+    const prompts = promptsResponse.data.filter(prompt => prompt.snapshot);
 
-    if ( !companies.length) {
+    if ( !companies.length||!prompts.length) {
       return res.status(200).json({
         status: "OK",
-        message: "No companies found",
+        message: "No companies or prompt found",
         data: { scores: [], analyzed: 0 }
       });
     }
-
+    
     const scores = [];
 
     // Analyze each snapshot against each company
     for (const company of companies) {
       // Convert to lowercase for better matching
-          const promptsResponse = await PromptService.getAllPromptCompany(company);
-            const prompts = promptsResponse.data.filter(prompt => prompt.snapshot);
       for (const prompt of prompts) {
          const snapshot = prompt.snapshot.toLowerCase();
         const companyName = company.name.toLowerCase();
@@ -176,7 +176,6 @@ const analyzeCompanyScores = async (req, res) => {
         }
       }
     }
-
     // Bulk create scores in database
     if (scores.length > 0) {
       const createdScores = await Score.insertMany(scores);

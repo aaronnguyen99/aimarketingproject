@@ -57,8 +57,6 @@ const [score, setScore] = useState([]);
           },
         }
       );
-    console.log('Full response:', response.data);
-    console.log('Companies array:', response.data.data);
     
     // Extract the nested data array
     setCompanies(response.data.data); // Note the double .data
@@ -70,10 +68,9 @@ const [score, setScore] = useState([]);
     }
     
   };
-  const fetchData = async (companyId) => {
+  const fetchData = async () => {
     try {
-      console.log(company);
-      const response = await axios.get(backendUrl+'/prompt/getallcompany/'+companyId,
+      const response = await axios.get(backendUrl+'/prompt/getall',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -91,10 +88,9 @@ const [score, setScore] = useState([]);
 
 }, []);
   useEffect(() => {
-  if (company && company._id) {
-    fetchData(company._id);
-  }
-}, [company]);
+    fetchData();
+  
+}, );
 const fetchResponse = async () => {
   try {
     setLoading(true);
@@ -109,10 +105,9 @@ const fetchResponse = async () => {
     );
     
     // Handle the response
-    console.log('Analysis complete:', response);
     // You might want to update some state with the response
     // setAnalysisResult(response.data);
-      fetchData(company._id);
+      fetchData();
       generateScoreAll();
   } catch (err) {
     console.error("Error fetching response:", err);
@@ -142,7 +137,7 @@ const fetchResponse = async () => {
         console.error("Error:", error);
       }
       
-      fetchData(company._id);
+      fetchData();
     };
 
 
@@ -157,15 +152,6 @@ const fetchResponse = async () => {
 
         
         <div className="flex justify-between items-center w-full mb-4">
-        <div>
-          <DropdownMenu
-          data={companies}
-          setData={setCompany}
-          selectedItem={company}
-          displayKey = "name" // Which property to display
-          valueKey = "_id" 
-          />
-        </div>
         <div>
         <button
         onClick={() => setIsModalOpen(true)}

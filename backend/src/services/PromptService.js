@@ -2,11 +2,11 @@ const Prompt=  require("../schema/PromptModel")
 
 const createPrompt = (newPrompt,userId) => {
     return new Promise(async(resolve,reject) => {
-        const {content,companyId}=newPrompt        
+        const {content}=newPrompt        
 
         try{
             const newPrompt=await Prompt.create({
-                userId,companyId,content
+                userId,content
             })
             if(newPrompt)
             {
@@ -87,24 +87,9 @@ const getAllPrompt = (userId) => {
         }
     })
 }
-const getAllPromptCompany = (companyId) => {
-    return new Promise(async(resolve,reject) => {
-        try{
-            const allPrompt=await Prompt.find({companyId: companyId})
-                resolve({
-                    status:'OK',
-                    message:"Get All Prompt Success",
-                    data:allPrompt,
-                })
-        }catch(e){
-            reject(e)
-        }
-    })
-}
 module.exports={
     createPrompt,
     updatePrompt,
     deletePrompt,
-    getAllPrompt,
-    getAllPromptCompany
+    getAllPrompt
 }
