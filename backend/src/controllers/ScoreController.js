@@ -1,5 +1,7 @@
 const { all } = require("../routes/ScoreRouter");
 const Score=  require("../schema/ScoreModel")
+const Company=  require("../schema/CompanyModel")
+
 const PromptService=require('../services/PromptService.js')
 const CompanyService=require('../services/CompanyService.js')
 const { default: mongoose } = require("mongoose");
@@ -27,56 +29,6 @@ const createScore=async(req,res)=>{
     }
 }
 
-const getAverageScore = async (req, res) => {
-  try {
-    const { promptId,companyId ,startDate, endDate} = req.query; // 👈 comes from /api/scores?promptId=123
-
-    if (!promptId&&!companyId) {
-      return res.status(400).json({
-        status: "Err",
-        message: "Either promptId or companyId is required",
-      });
-    }
-        const filter = { };
-        if (startDate && endDate) {
-        // Custom date range
-        filter.createdAt = {
-            $gte: new Date(startDate),
-            $lte: new Date(endDate)
-        };
-        }
-        if (promptId) filter.promptId = promptId;
-        if (companyId) filter.companyId = companyId;
-        const allScore = await Score.find(filter);
-        if(allScore.length===0){
-            return res.status(200).json({
-            status: "OK",
-            message: "Empty",
-            data:[0,0]
-    });
-        }
-        filter.visible=true;
-        const allvisible=await Score.find(filter);
-        let position=0;
-        for(const property of allvisible){
-            position+=property.position;
-        }
-
-    const percent=allvisible.length*100/allScore.length;
-
-        position/=allScore.length;
-    return res.status(200).json({
-      status: "OK",
-      message: "Get All Score Success",
-      data: [Math.floor(percent),position.toFixed(1)]
-    });
-  } catch (e) {
-    return res.status(500).json({
-      status: "Err",
-      message: e.message || "Server error",
-    });
-  }
-};
 const getScoreDashboard = async (req, res) => {
   try {
     const { companyId ,time} = req.query; // 👈 comes from /api/scores?promptId=123
@@ -110,7 +62,8 @@ const getScoreDashboard = async (req, res) => {
           },
             dailyAverage: { $avg: { $toDouble: "$visible" } },
             dailyPosition: { $avg: { $toDouble: "$position" } },
-          count: { $sum: 1 }
+            dailySentiment: { $avg: { $toDouble: "$sentiment" } },
+            count: { $sum: 1 }
         }
       },
       {
@@ -128,7 +81,63 @@ const getScoreDashboard = async (req, res) => {
     });
   }
 };
+const getLastScore = async (req, res) => {
+  try {
+    const {time} = req.query;
+    const companiesResponse = await CompanyService.getAllCompany(req.userId);
+    const companies = companiesResponse.data;
+    const companyIds = companies.map(c => c._id);
 
+      const lastDay = new Date(Date.now() - time * 24 * 60 * 60 * 1000);
+
+      const dailyAverage = await Score.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: lastDay },
+            companyId: { $in: companyIds }
+
+          }
+        },
+        {
+          $group: {
+            _id: "$companyId",
+            avgVisibility: { $avg: { $toDouble: "$visible" } },
+            avgPosition: { $avg: { $toDouble: "$position" } },
+            avgSentiment: { $avg: { $toDouble: "$sentiment" } }
+          }
+        },
+          {
+            $lookup: {
+              from: "companies",        // collection name
+              localField: "_id",
+              foreignField: "_id",
+              as: "company"
+            }
+          },
+          { $unwind: "$company" },
+          {
+            $project: {
+              companyId: "$_id",
+              companyName: "$company.name",
+              domain: "$company.domain",
+              avgVisibility: { $concat: [{ $toString: { $round: [{ $multiply: ["$avgVisibility", 100] }, 2] } }, "%"] },
+              avgPosition: { $round: ["$avgPosition", 2] },
+              avgSentiment: { $round: ["$avgSentiment", 2] },              
+              count: 1
+            }
+          }
+      ]);
+    return res.status(200).json({
+      success: true,
+      data: dailyAverage
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: "Err",
+      message: e.message || "Server error",
+    });
+  }
+};
 const analyzeCompanyScores = async (req, res) => {
   try {
 
@@ -163,7 +172,8 @@ const analyzeCompanyScores = async (req, res) => {
                 "promptId":prompt._id,
                 "companyId":company._id,
                 "visible":true,
-                "position":position
+                "position":position,
+                "sentiment":position*0.6+0.4
             })
         }
         else{
@@ -171,7 +181,8 @@ const analyzeCompanyScores = async (req, res) => {
             "promptId":prompt._id,
             "companyId":company._id,
             "visible":false,
-            "position":0
+            "position":0,
+            "sentiment":0
           })
         }
       }
@@ -208,8 +219,8 @@ const analyzeCompanyScores = async (req, res) => {
 };
 module.exports={
     createScore,
-    getAverageScore,
     analyzeCompanyScores,
-    getScoreDashboard
+    getScoreDashboard,
+    getLastScore
 
 }

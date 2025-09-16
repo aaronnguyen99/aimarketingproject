@@ -3,13 +3,14 @@ import React from 'react'
 const SortTable = ({ 
   data, 
   columns,
+  defaultSort,
   className = "",
   headerClassName = "bg-gray-50",
   rowClassName = "hover:bg-gray-50",
   cellClassName = "",
   emptyMessage = "No data available"
 }) => {
-  const [sortConfig, setSortConfig] = React.useState({ key: 'count', direction: 'desc' });
+  const [sortConfig, setSortConfig] = React.useState(defaultSort);
   const sortedData = React.useMemo(() => {
     if (!sortConfig.key) return data;
 
@@ -48,10 +49,10 @@ const SortTable = ({
               <th 
                 key={column.key || index}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                // onClick={() => column.sortable !== false && handleSort(column.key)}
+                onClick={() => column.sortable !== false && handleSort(column.key)}
               >
                 <div className="flex items-center space-x-1">
-                  <span>{column.key || column.header}</span>
+                  <span>{column.title || column.key}</span>
                   {sortConfig.key === column.key && (
                     <span>{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                   )}

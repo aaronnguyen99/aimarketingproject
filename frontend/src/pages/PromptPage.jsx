@@ -19,14 +19,7 @@ const [data, setData] = useState([]);
 const [score, setScore] = useState([]);
   const fetchScore = async (companyId) => {
     try {
-    //   const response = await axios.get(backendUrl+'/score/getaverage?promptId='+promptId+'&&companyId='+companyId,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     }
-    //   );
-    // setScore(response.data.data[0]);
+
     } catch (error) {
       console.error('Error:', error);
     }

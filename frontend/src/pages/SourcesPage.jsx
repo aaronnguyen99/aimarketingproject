@@ -46,6 +46,7 @@ const SourcesPage = () => {
         data={sources}
         columns={[  { key: 'url', title: 'Domain' },
                     { key: 'count', title: 'Count' }]}
+        defaultSort={{ key: 'count', title: 'Count' }}
         
         />
 
