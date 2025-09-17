@@ -1,3 +1,4 @@
+const vader = require('vader-sentiment')
 const { all } = require("../routes/ScoreRouter");
 const Score=  require("../schema/ScoreModel")
 const Company=  require("../schema/CompanyModel")
@@ -39,7 +40,7 @@ const getScoreDashboard = async (req, res) => {
         message: "companyId is required",
       });
     }
-    let formatTime="%Y-%m-%d"
+    let formatTime="%b %d"
 
         const sevenDaysAgo = new Date(Date.now() - time * 24 * 60 * 60 * 1000);
     const dailyAverages = await Score.aggregate([
@@ -157,36 +158,49 @@ const analyzeCompanyScores = async (req, res) => {
     
     const scores = [];
 
-    // Analyze each snapshot against each company
-    for (const company of companies) {
-      // Convert to lowercase for better matching
-      for (const prompt of prompts) {
-         const snapshot = prompt.snapshot.toLowerCase();
-        const companyName = company.name.toLowerCase();
-        const check=snapshot.indexOf(companyName);
+for (const prompt of prompts) {
+    const snapshot = prompt.snapshot.toLowerCase();
 
-        // Check if company name exists in snapshot
-        if (check!==-1) {
-            const position = (1 - parseFloat(check) / snapshot.length) * 10;
-            scores.push({
-                "promptId":prompt._id,
-                "companyId":company._id,
-                "visible":true,
-                "position":position,
-                "sentiment":position*0.6+0.4
-            })
-        }
-        else{
-            scores.push({
-            "promptId":prompt._id,
-            "companyId":company._id,
-            "visible":false,
-            "position":0,
-            "sentiment":0
-          })
-        }
+    // Pre-split sentences once
+    const sentences = snapshot.split(/[.!?]/).map(s => s.trim()).filter(Boolean);
+
+    for (const company of companies) {
+      const companyName = company.name.toLowerCase();
+
+      // Find sentence containing company
+      const companySentences = sentences.filter(s => s.includes(companyName));
+
+      if (companySentences.length > 0) {
+        // Compute sentiment for each sentence
+        const sentiments = companySentences.map(s =>
+          (vader.SentimentIntensityAnalyzer.polarity_scores(s).compound + 1) / 2
+        );
+
+        // Average sentiment
+        const sentiment = sentiments.reduce((a, b) => a + b, 0) / sentiments.length;
+
+        const check = snapshot.indexOf(companyName);
+        const position = (1 - check / snapshot.length) * 10;
+
+        scores.push({
+          promptId: prompt._id,
+          companyId: company._id,
+          visible: true,
+          position,
+          sentiment
+        });
+      } else {
+        scores.push({
+          promptId: prompt._id,
+          companyId: company._id,
+          visible: false,
+          position: 0,
+          sentiment: 0.5
+        });
       }
     }
+  }
+
     // Bulk create scores in database
     if (scores.length > 0) {
       const createdScores = await Score.insertMany(scores);

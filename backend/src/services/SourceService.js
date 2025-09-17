@@ -35,7 +35,22 @@ const getAllSource = (userId) => {
         }
     })
 }
-
+const getTop5 = (userId) => {
+    return new Promise(async(resolve,reject) => {
+        try{
+            const topSources = await Source.find({ userId }) // filter by user
+            .sort({ count: -1 })  // sort by count descending
+            .limit(5);  
+                resolve({
+                    status:'OK',
+                    message:"Get Top Source Success",
+                    data:topSources,
+                })
+        }catch(e){
+            reject(e)
+        }
+    })
+}
 const update = async (userId, url) => {
     const existing = await Source.findOne({ url });
     
@@ -53,8 +68,11 @@ const update = async (userId, url) => {
         });
     }
 };
+
+
 module.exports={
     createSource,
     getAllSource,
-    update
+    update,
+    getTop5
 }

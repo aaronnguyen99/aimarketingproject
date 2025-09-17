@@ -112,11 +112,9 @@ const fetchResponse = async () => {
     // 🔑 function to add data
     const addData = async (promptText) => {
       try {
-        console.log(company);
         const response = await axios.post(
           backendUrl+"/prompt/create",
           { 
-            companyId:company._id,
             content: promptText 
           },
           { 
@@ -125,7 +123,6 @@ const fetchResponse = async () => {
             },
           }
         );
-        console.log(response.data);
       } catch (error) {
         console.error("Error:", error);
       }
