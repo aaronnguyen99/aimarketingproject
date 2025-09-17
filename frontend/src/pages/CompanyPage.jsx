@@ -73,7 +73,7 @@ const CompanyPage = () => {
 
 
     <div>
-        <div className="flex self-end">
+        <div className="flex self-end  mb-4 border-b border-gray-300">
           <button
             onClick={() => setIsModalOpen(true)}
             className="max-w-md mb-4 px-4 py-2 bg-black text-white rounded-lg "
@@ -86,7 +86,7 @@ const CompanyPage = () => {
               onClose={() => setIsModalOpen(false)}
               onAdd={addCompany}
             />
-        <div>   
+        <div className='p-5'>   
         <Table 
         data={companies} 
         setData={setCompanies}

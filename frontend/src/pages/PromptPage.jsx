@@ -141,15 +141,16 @@ const fetchResponse = async () => {
             </div>
 
         
-        <div className="flex justify-between items-center w-full mb-4">
+        <div className="flex justify-between items-center w-full mb-4 border-b border-gray-300">
         <div>
         <button
         onClick={() => setIsModalOpen(true)}
         className="max-w-md mb-4 px-4 py-2 bg-black text-white rounded-lg "
       >
         + Add
-      </button></div></div>
-      <div>
+      </button></div>
+      </div>
+      <div className='mt-8 p-5'>
         <Table 
         data={data} 
         setData={setData}

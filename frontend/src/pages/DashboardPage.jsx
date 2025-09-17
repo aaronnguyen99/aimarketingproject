@@ -16,7 +16,7 @@ const Dashboard = () => {
   const [dataTable,setDataTable] = useState([]);
   const [sources,setSources]=useState([]);
 
-  const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#b6379aff', '#b66363ff', '#361529ff', '#f70098ff', '#5a0e0eff', '#00ff15ff', '#8c00e9ff', '#000000ff'];
+  const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#b6379aff', '#b66363ff', '#361529ff', '#f70098ff', '#5a0e0eff', '#00ff15ff', '#8c00e9ff', '#8b5cf6'];
   const timeRange=[
     {key:"all", value:1000,name:"All time"},
     {key:"today", value:1,name:"Today"},
@@ -181,34 +181,38 @@ const downloadCSV = (data, filename = "scores.csv") => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 ">
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600 mt-2">Welcome back! Here's what's happening with your business.</p>
-             <div className="p-4">
-      <select
-        multiple={false}
-        id="time"
-        value={time}
-        onChange={(e) => setTime(e.target.value)}
-        className="border rounded p-2"
-      >
-        {timeRange.map((range) => (
-          <option key={range.key} value={range.value}>
-            {range.name}
-          </option>
-        ))}
-      </select>
-    </div> 
+             <div className="p-4 flex justify-between w-full border-b border-gray-300">
+              <div className="gap-6 mb-8">
+                <select
+                  multiple={false}
+                  id="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="border rounded p-2"
+                >
+                  {timeRange.map((range) => (
+                    <option key={range.key} value={range.value}>
+                      {range.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            <div >
+                <div><button
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  onClick={() => downloadCSV(chart)}
+                >
+                  Export CSV
+              </button></div>     
+            </div> 
+
         </div>
 
-        <div className="grid gap-6 mb-8">
-          <div><button
-  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-  onClick={() => downloadCSV(chart)}
->
-  Export CSV
-</button></div>
-            <div>
+
+            <div className="bg-white p-6 rounded-lg shadow-sm border mt-8 mb-4">
             <SortTable
                 data={dataTable}
                 columns={[  { key: 'companyName', title: 'School name' },
@@ -223,7 +227,8 @@ const downloadCSV = (data, filename = "scores.csv") => {
             </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Visibility Trend</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Visibility Trend</h3>
+            <p className="text-gray-600 mb-4">% of chats where tracked schools and organizations are mentioned</p>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chart}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -259,7 +264,8 @@ const downloadCSV = (data, filename = "scores.csv") => {
 
           {/* Line Chart */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Position Trend</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Position Trend</h3>
+            <p className="text-gray-600 mb-4">Average ranking of your school in AI responses</p>
            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chart}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -293,7 +299,8 @@ const downloadCSV = (data, filename = "scores.csv") => {
             
           </div>
                     <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Sentiment Trend</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Sentiment Trend</h3>
+            <p className="text-gray-600 mb-4">VADER sentiment analysis of the schools mentioned in AI responses</p>
            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chart}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -327,7 +334,8 @@ const downloadCSV = (data, filename = "scores.csv") => {
             
           </div>
           <div className="bg-white p-6 rounded-lg shadow-sm border">            
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 5 Sources</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Top 5 Sources</h3>
+            <p className="text-gray-600 mb-4">Most sources used across AI models</p>
             <SortTable
               data={sources}
               columns={[  { key: 'url', title: 'Domain' },
