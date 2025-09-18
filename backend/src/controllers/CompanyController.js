@@ -2,7 +2,7 @@ const CompanyService=require('../services/CompanyService.js')
 
 const createCompany=async(req,res)=>{
     try{
-        const {name,domain}=req.body        
+        const {name,domain,isYour}=req.body        
 
         if(!name)
         {
@@ -31,7 +31,7 @@ const updateCompany=async(req,res)=>{
                 message:'companyId and name are required'
             })
         }
-        const response=await CompanyService.updateCompany(companyId,data)
+        const response=await CompanyService.updateCompany(companyId,data,req.userId)
         console.log('response',response)
 
         return res.status(200).json(response)

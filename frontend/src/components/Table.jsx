@@ -3,6 +3,7 @@ import ConversationModal from "./ConversationModal";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 import OptionModal from "./OptionModal";
+import EditModal from "./EditModal";
 
 const Table = (props) => {
   const { token } = useAuth();
@@ -10,28 +11,20 @@ const Table = (props) => {
 const [isConversationModalOpen, setIsConversationModalOpen] = useState(false);
 const [selectedRow, setSelectedRow] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
-  const [modalType, setModalType] = useState(""); // "remove" or "edit"
 const [modalOpen, setModalOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
-const openModal  = (type,id) => {
-  setModalType(type);
+const openModal  = (id) => {
   setSelectedId(id);
   setModalOpen(true);
 };
   const closeModal = () => {
     setModalOpen(false);
     setSelectedId(null);
-    setModalType("");
   };
   const confirmDelete = () => {
     if (selectedId) {
       handleRemoveRow(selectedId);
-      closeModal();
-    }
-  };
-    const confirmEdit = (newName) => {
-    if (selectedId) {
-      onEdit(selectedId.id, newName);
       closeModal();
     }
   };
@@ -52,10 +45,24 @@ const handleRemoveRow = async (idx) => {
       
       props.fetchData();
 };
-const handleEditRow = async (idx) => {
+  const openEdit = (row) => {
+    setSelectedRow(row);
+    setEditOpen(true);
+  };
+
+  const closeEdit = () => {
+    setEditOpen(false);
+    setSelectedRow(null);
+  };
+    const handleSave = (updatedRow) => {
+    handleEditRow(updatedRow);
+    closeEdit();
+  };
+const handleEditRow = async (updatedData) => {
       try {
-        const response = await axios.delete(
-          backendUrl+"/"+props.type+"/update/"+idx,
+        const response = await axios.put(
+          backendUrl+"/"+props.type+"/update/"+updatedData._id,
+          updatedData,
           { 
             headers: {
               Authorization: `Bearer ${token}`, 
@@ -75,10 +82,10 @@ const handleEditRow = async (idx) => {
         <thead>
           <tr className="bg-gray-100 text-gray-700 uppercase text-sm ">
             <th className="py-3 px-6">{props.type}</th>
-            <th className="py-3 px-6">
-              {props.isPrompt ? null : "DOMAIN"}
-            </th>
-            {/* <th className="py-3 px-6">Sentiment</th> */}
+            {!props.isPrompt&&(<th className="py-3 px-6">
+              {"DOMAIN"}
+            </th>)}
+            <th className="py-3 px-6">{!props.isPrompt ? "Date added" :"Created"}</th>
             <th className="py-3 px-6">Options</th>
           </tr>
         </thead>
@@ -88,15 +95,7 @@ const handleEditRow = async (idx) => {
 
             className="border-b-1 border-b-gray-100 hover:bg-gray-50 transition-colors"  
             >
-              <td onClick={
-                  props.isPrompt
-                    ? () => {
-                        setSelectedRow(row);
-                        setIsConversationModalOpen(true);
-                      }
-                    : undefined
-}
-                  className="py-3 px-6 border-r-1 border-solid border-gray-200">  {props.isPrompt ? (
+              <td className="py-3 px-6 border-r-1 border-solid border-gray-200">  {props.isPrompt ? (
                   row.content
                 ) : (
                 <div className="flex gap-3 font-bold">
@@ -107,18 +106,41 @@ const handleEditRow = async (idx) => {
                       onError={(e) => (e.currentTarget.style.display = "none")}
                   />
                   <span>{row.name}</span>
-                </div>
+                  {row.isYour && (
+                    <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                      Your School
+                    </span>
+                  )}                
+                  </div>
                 )}</td>
-              <td className="py-3 px-6 ">{props.isPrompt ? null : row.domain}</td>
+                
+              {!props.isPrompt&&(<td className="py-3 px-6  border-r-1 border-solid border-gray-200">{row.domain}</td>)}
+              <td className="py-3 px-6  border-r-1 border-solid border-gray-200">  
+                {new Date(row.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric"
+              })}</td>
               <td className="py-3 px-6 flex items-center gap-2"> 
+                { props.isPrompt &&(
 
                 <button
-                  onClick={() => openModal ("edit",row._id)}
+                  onClick={() => {
+                        setSelectedRow(row);
+                        setIsConversationModalOpen(true);
+                      }
+                  }
+                  className="flex items-center gap-2 px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors font-medium">
+                  👁️‍🗨️
+                </button>)
+                }
+                <button
+                  onClick={() => openEdit(row)}
                   className="flex items-center gap-2 px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors font-medium">
                   🖊️
                 </button>
                   <button
-                  onClick={() => openModal ("remove",row._id)}
+                  onClick={() => openModal (row._id)}
                   className="flex items-center gap-2 px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors font-medium">
                   🗑️
                 </button>
@@ -127,7 +149,7 @@ const handleEditRow = async (idx) => {
           ))}
         </tbody>
       </table>
-            {modalOpen && modalType === "remove" && (
+            {modalOpen && (
 
         <OptionModal
         isOpen={modalOpen}
@@ -141,6 +163,14 @@ const handleEditRow = async (idx) => {
       Are you sure you want to remove this? All of your data associated with this may be lost.
       </OptionModal>
             )}
+          {editOpen && selectedRow && (
+        <EditModal
+          isOpen={editOpen}
+          onClose={closeEdit}
+          data={selectedRow}
+          onSave={handleSave}
+        />
+      )}
         <ConversationModal
         isOpen={isConversationModalOpen}
         onClose={() => setIsConversationModalOpen(false)}

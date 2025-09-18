@@ -8,7 +8,8 @@ const SortTable = ({
   headerClassName = "bg-gray-50",
   rowClassName = "hover:bg-gray-50",
   cellClassName = "",
-  emptyMessage = "No data available"
+  emptyMessage = "No data available",
+  promptCount
 }) => {
   const [sortConfig, setSortConfig] = React.useState(defaultSort);
   const sortedData = React.useMemo(() => {
@@ -66,14 +67,21 @@ const SortTable = ({
             <tr key={row._id || rowIndex} className={rowClassName}>
               <td>{rowIndex+1}</td>
               <td>
-                <div className="flex items-center justify-center gap-3 font-bold">
+                <div className="flex p-4 gap-3 font-bold">
                   <img
                     src={`https://www.google.com/s2/favicons?sz=64&domain=${row.url||row.domain}`}
                     alt=""
                     className="w-6 h-6"
                       onError={(e) => (e.currentTarget.style.display = "none")}
-                  />                
+                  />
+                               <span>{row.name || row.companyName}</span>
+                         {row.isYour && (
+          <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+            Your School
+          </span>
+        )}           
                   </div>
+ 
                 </td>
               {columns.map((column, colIndex) => (
                 
@@ -82,6 +90,7 @@ const SortTable = ({
                   className={`px-6 py-4 whitespace-nowrap text-sm text-gray-900 ${cellClassName}`}
                 >
                   {column.render ? column.render(row[column.key], row) : row[column.key]}
+                  
                 </td>
               ))}
             </tr>

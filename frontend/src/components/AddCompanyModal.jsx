@@ -3,12 +3,13 @@ import React, { useState } from "react";
 const AddCompanyModal = ({ isOpen, onClose, onAdd }) => {
   const [company, setCompany] = useState("");
   const [domain,setDomain]= useState("");
-
+  const [isYour,setIsYour]=useState(false);
   const handleAdd = () => {
     if (!company.trim()) return; // don't add empty prompt
-    onAdd(company,domain);
+    onAdd(company,domain,isYour);
     setCompany(""); // reset textarea
     setDomain("");
+    setIsYour(false);
     onClose(); // close modal
   };
 
@@ -41,6 +42,15 @@ const AddCompanyModal = ({ isOpen, onClose, onAdd }) => {
                      text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
                      focus:border-blue-500 transition duration-200 resize-none break-words"
         />
+                <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            checked={isYour}
+            onChange={(e) => setIsYour(e.target.checked)}
+          />
+          <span className="text-gray-700">Is this your school?</span>
+        </label>
         <div className="flex mt-9 ">
           {/* Add button */}
           <button

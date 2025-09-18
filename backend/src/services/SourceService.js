@@ -68,7 +68,23 @@ const update = async (userId, url) => {
         });
     }
 };
-
+const updateArticle = async (userId, url) => {
+    const existing = await Source.findOne({ url });
+    
+    if (existing) {
+        return await Source.findByIdAndUpdate(
+            existing._id,
+            { $inc: { count: 1 } },
+            { new: true }
+        );
+    } else {
+        return await Source.create({
+            userId,
+            url,
+            count: 1
+        });
+    }
+};
 
 module.exports={
     createSource,

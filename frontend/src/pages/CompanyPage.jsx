@@ -12,14 +12,15 @@ const CompanyPage = () => {
   const { token } = useAuth();
   const backendUrl=import.meta.env.VITE_BACKEND_URL;
 
-    const addCompany = async (newCompany,domain) => {
+    const addCompany = async (newCompany,domain,isYour) => {
       try {
-        
+
         const response = await axios.post(
           backendUrl+"/company/create",
           { 
             "name": newCompany,
-            "domain": domain
+            "domain": domain,
+            isYour
           },
           { 
             headers: {

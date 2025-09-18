@@ -149,8 +149,9 @@ const fetchResponse = async () => {
       >
         + Add
       </button></div>
+      <div >              <p className="text-gray-600 mt-2">{data.length} of 25 prompts used</p></div>
       </div>
-      <div className='mt-8 p-5'>
+      <div className=' mt-8 p-5'>
         <Table 
         data={data} 
         setData={setData}

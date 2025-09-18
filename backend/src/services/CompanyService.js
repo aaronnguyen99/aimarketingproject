@@ -2,11 +2,17 @@ const Company=  require("../schema/CompanyModel")
 
 const createCompany = (newCompany,userId) => {
     return new Promise(async(resolve,reject) => {
-        const {name,domain}=newCompany        
+        const {name,domain,isYour}=newCompany        
 
         try{
+            if (isYour) {
+                await Company.updateMany(
+                    { userId: userId, isYour: true },
+                    { $set: { isYour: false } }
+                );
+            }
             const newCompany=await Company.create({
-                userId,name,domain
+                userId,name,domain,isYour
             })
             if(newCompany)
             {
@@ -21,7 +27,7 @@ const createCompany = (newCompany,userId) => {
         }
     })
 }
-const updateCompany = (id,data) => {
+const updateCompany = (id,data,userId) => {
     return new Promise(async(resolve,reject) => {
 
         try{
@@ -34,6 +40,12 @@ const updateCompany = (id,data) => {
                     status:'OK',
                     message:"Company is not defined",
                 })
+            }
+            if (data.isYour) {
+                await Company.updateMany(
+                    { userId: userId, isYour: true },
+                    { $set: { isYour: false } }
+                );
             }
             const updatedCompany= await Company.findByIdAndUpdate(id,data,{new:true})
                 resolve({

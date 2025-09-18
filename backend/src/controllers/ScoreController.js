@@ -121,6 +121,7 @@ const getLastScore = async (req, res) => {
               companyId: "$_id",
               companyName: "$company.name",
               domain: "$company.domain",
+              isYour:"$company.isYour",
               avgVisibility: { $concat: [{ $toString: { $round: [{ $multiply: ["$avgVisibility", 100] }, 2] } }, "%"] },
               avgPosition: { $round: ["$avgPosition", 2] },
               avgSentiment: { $round: ["$avgSentiment", 2] },              

@@ -40,6 +40,7 @@ const Dashboard = () => {
           }
         );
       setDataTable(response.data.data); 
+      console.log("data",dataTable);
       } catch (error) {
         console.error('Error:', error);
       } 
@@ -212,23 +213,33 @@ const downloadCSV = (data, filename = "scores.csv") => {
         </div>
 
 
-            <div className="bg-white p-6 rounded-lg shadow-sm border mt-8 mb-4">
+            <div className="bg-white p-4 rounded-lg shadow-sm border mt-8 mb-4">
             <SortTable
                 data={dataTable}
-                columns={[  { key: 'companyName', title: 'School name' },
+                columns={[  
                             { key: 'domain', title: 'Domain' },
                             { key: 'avgVisibility', title: 'Visible' },
                             { key: 'avgPosition', title: 'Position' },
                             { key: 'avgSentiment', title: 'Sentiment' },
-                            
+                            {key:'isYour'}
                             ]}
                 defaultSort={{ key: 'avgVisibility', title: 'Visible' }}
                 />
             </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <div className='flex justify-between mb-6'>
             <h3 className="text-lg font-semibold text-gray-900">Visibility Trend</h3>
-            <p className="text-gray-600 mb-4">% of chats where tracked schools and organizations are mentioned</p>
+            <div className="relative group inline-block">
+              <button className="">
+                <span class="text-blue-600 text-2xl">ⓘ</span>
+            </button>
+              <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block
+                rounded-md bg-gray-800 text-white text-sm px-2 py-1 whitespace-nowrap">
+                % of chats where tracked schools and organizations are mentioned
+              </span>
+            </div>
+            </div>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chart}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -264,8 +275,17 @@ const downloadCSV = (data, filename = "scores.csv") => {
 
           {/* Line Chart */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
+                        <div className='flex justify-between mb-6'>
             <h3 className="text-lg font-semibold text-gray-900">Position Trend</h3>
-            <p className="text-gray-600 mb-4">Average ranking of your school in AI responses</p>
+            <div className="relative group inline-block">
+              <button className="">
+                <span class="text-blue-600 text-2xl">ⓘ</span>
+            </button>
+              <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block
+                rounded-md bg-gray-800 text-white text-sm px-2 py-1 whitespace-nowrap">
+              Average ranking of your school in AI responses              </span>
+            </div>
+            </div>
            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chart}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -299,8 +319,17 @@ const downloadCSV = (data, filename = "scores.csv") => {
             
           </div>
                     <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <div className='flex justify-between mb-6'>
             <h3 className="text-lg font-semibold text-gray-900">Sentiment Trend</h3>
-            <p className="text-gray-600 mb-4">VADER sentiment analysis of the schools mentioned in AI responses</p>
+            <div className="relative group inline-block">
+              <button className="">
+                <span class="text-blue-600 text-2xl">ⓘ</span>
+            </button>
+              <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block
+                rounded-md bg-gray-800 text-white text-sm px-2 py-1 whitespace-nowrap">
+            VADER sentiment analysis of the schools mentioned in AI responses              </span>
+            </div>
+            </div>
            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chart}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -333,9 +362,18 @@ const downloadCSV = (data, filename = "scores.csv") => {
             </ResponsiveContainer>
             
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm border">            
+          <div className="bg-white p-6 rounded-lg shadow-sm border">    
+              <div className='flex justify-between mb-6'>
             <h3 className="text-lg font-semibold text-gray-900">Top 5 Sources</h3>
-            <p className="text-gray-600 mb-4">Most sources used across AI models</p>
+            <div className="relative group inline-block">
+              <button className="">
+                <span class="text-blue-600 text-2xl">ⓘ</span>
+            </button>
+              <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block
+                rounded-md bg-gray-800 text-white text-sm px-2 py-1 whitespace-nowrap">
+            Most sources used across AI models              </span>
+            </div>
+            </div>        
             <SortTable
               data={sources}
               columns={[  { key: 'url', title: 'Domain' },

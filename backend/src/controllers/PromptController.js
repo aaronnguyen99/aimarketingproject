@@ -74,6 +74,19 @@ const getAllPrompt=async(req,res)=>{
         })
     }
 }
+const getPromptLength=async(req,res)=>{
+    try{
+        const response=await PromptService.getAllPrompt(req.userId)
+
+const totalCount = response.data.reduce((sum, item) => sum + (item.count || 0), 0);
+
+return res.status(200).json({ count: totalCount });
+    }catch(e){
+        return res.status(404).json({
+            message:e
+        })
+    }
+}
 function extractBrackets(text) {
   return (text.match(/\[([^\]]*)\]/g) || []).map(match => match.slice(1, -1));
 }
@@ -104,9 +117,10 @@ const analyzeprompt = async (req, res) => {
             }
 
         // Update prompt in database
+        item.count++
         const updated = await PromptService.updatePrompt(
           item._id,
-          { snapshot: output, content: item.content }
+          { snapshot: output, content: item.content,count:item.count }
         );
 
         return updated;
@@ -143,5 +157,6 @@ module.exports={
     updatePrompt,
     deletePrompt,
     getAllPrompt,
-    analyzeprompt
+    analyzeprompt,
+    getPromptLength
 }
