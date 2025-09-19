@@ -159,48 +159,50 @@ const analyzeCompanyScores = async (req, res) => {
     
     const scores = [];
 
-for (const prompt of prompts) {
-    const snapshot = prompt.snapshot.toLowerCase();
+const models = ["gpt5", "gemini"]; // keys in snapshots
 
-    // Pre-split sentences once
-    const sentences = snapshot.split(/[.!?]/).map(s => s.trim()).filter(Boolean);
+for (const prompt of prompts) {
+  for (const model of models) {
+    const snapshot = (prompt.snapshots[model] || "").toLowerCase();
+
+    if (!snapshot) continue; // skip if model output missing
+
+    const sentences = snapshot
+      .split(/[.!?]/)
+      .map(s => s.trim())
+      .filter(Boolean);
 
     for (const company of companies) {
       const companyName = company.name.toLowerCase();
-
-      // Find sentence containing company
       const companySentences = sentences.filter(s => s.includes(companyName));
 
+      let sentiment, position, visible;
       if (companySentences.length > 0) {
-        // Compute sentiment for each sentence
         const sentiments = companySentences.map(s =>
           (vader.SentimentIntensityAnalyzer.polarity_scores(s).compound + 1) / 2
         );
-
-        // Average sentiment
-        const sentiment = sentiments.reduce((a, b) => a + b, 0) / sentiments.length;
+        sentiment = sentiments.reduce((a, b) => a + b, 0) / sentiments.length;
 
         const check = snapshot.indexOf(companyName);
-        const position = (1 - check / snapshot.length) * 10;
-
-        scores.push({
-          promptId: prompt._id,
-          companyId: company._id,
-          visible: true,
-          position,
-          sentiment
-        });
+        position = (1 - check / snapshot.length) * 10;
+        visible = true;
       } else {
-        scores.push({
-          promptId: prompt._id,
-          companyId: company._id,
-          visible: false,
-          position: 0,
-          sentiment: 0.5
-        });
+        sentiment = 0.5;
+        position = 0;
+        visible = false;
       }
+
+      scores.push({
+        promptId: prompt._id,
+        companyId: company._id,
+        model,          // track which model this score comes from
+        visible,
+        position,
+        sentiment,
+      });
     }
   }
+}
 
     // Bulk create scores in database
     if (scores.length > 0) {

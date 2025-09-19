@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import ReactMarkdown from 'react-markdown';
+import SnapshotSelector from "./SnapshotSelector";
 
 
 const ConversationModal = ({ isOpen, onClose ,data}) => {
   const [prompt, setPrompt] = useState("");
+  const [selectedModel, setSelectedModel] = useState("gpt5");
+
 const normalizeMarkdown = (text) => {
   console.log(text);
   return text.replace(/#+(?=\S)/g, (match) => match + " "); 
@@ -16,7 +19,11 @@ const normalizeMarkdown = (text) => {
   <div className="bg-gradient-to-br from-indigo-50 via-white to-teal-50 rounded-2xl shadow-2xl w-full max-w-4xl relative overflow-hidden">
     {/* Close button */}
     <button
-      onClick={onClose}
+      onClick={() => {
+          onClose();               // close the modal
+          setSelectedModel('gpt5'); // reset selected model
+        }}
+
       className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white shadow hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition"
     >
       ×
@@ -32,7 +39,12 @@ const normalizeMarkdown = (text) => {
           {data.content}
         </p>
       </div>
-
+    <div className="p-4">
+      <SnapshotSelector
+        snapshots={data.snapshots}
+        onSelect={setSelectedModel}
+      />
+    </div>
       {/* Result */}
       <div className="p-6 border-l-4 border-emerald-500 rounded-xl bg-white shadow-sm prose prose-gray max-w-none">
         <h2 className="text-xl font-semibold text-emerald-600 mb-3">Result</h2>
@@ -66,7 +78,7 @@ const normalizeMarkdown = (text) => {
         </a>
       );
     },
-  }}>{normalizeMarkdown(data.snapshot)}</ReactMarkdown>
+  }}>{normalizeMarkdown(data.snapshots[selectedModel])}</ReactMarkdown>
       </div>
       
     </div>

@@ -1,8 +1,13 @@
+require('dotenv').config();
 const PromptService=require('../services/PromptService.js')
 const SourceService=require('../services/SourceService.js')
 const OpenAI = require("openai");
-const client = new OpenAI({
-  apiKey: "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",
+const { GoogleGenAI } = require("@google/genai");
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+const gemini = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY
 });
 const createPrompt=async(req,res)=>{
     try{
@@ -98,8 +103,7 @@ const analyzeprompt = async (req, res) => {
     // Process all prompts concurrently for maximum speed
     const processPrompt = async (item) => {
       try {
-                    // Call OpenAI with correct API structure
-            const completion = await client.responses.create({
+            const gpt5Response = await openai.responses.create({
                     model: "gpt-5",
           tools: [
             {
@@ -108,9 +112,14 @@ const analyzeprompt = async (req, res) => {
           ],
           input:item.content,
         });
+  const geminiResponse = await gemini.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: item.content,
+  });
+        const gptOutput = gpt5Response.output_text || "No output";
+        const geminiOutput = geminiResponse.text || "No output";
 
-        const output = completion.output_text || "No output";
-        const source=extractBrackets(output);
+        const source=extractBrackets(gptOutput);
 
             for(const url of source){
                 await SourceService.update(req.userId,url);
@@ -120,7 +129,10 @@ const analyzeprompt = async (req, res) => {
         item.count++
         const updated = await PromptService.updatePrompt(
           item._id,
-          { snapshot: output, content: item.content,count:item.count }
+          {      snapshots: {
+        gpt5: gptOutput,
+        gemini: geminiOutput,
+      }, content: item.content,count:item.count }
         );
 
         return updated;
