@@ -8,7 +8,6 @@ const ConversationModal = ({ isOpen, onClose ,data}) => {
   const [selectedModel, setSelectedModel] = useState("gpt5");
 
 const normalizeMarkdown = (text) => {
-  console.log(text);
   return text.replace(/#+(?=\S)/g, (match) => match + " "); 
   // ensures "#Heading" → "# Heading"
 };

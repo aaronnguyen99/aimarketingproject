@@ -34,7 +34,7 @@ export default function EditModal({ isOpen, onClose, data, onSave }) {
         <div className="mb-4 space-y-3 max-h-80 overflow-auto">
           {Object.keys(formData).map((key) => {
             // Skip id or system fields if needed
-            if (key === "id" || key === "_id"||key === "snapshot"|| key === "userId"|| key === "createdAt"|| key === "updatedAt"|| key === "__v"|| key === "count") return null;
+            if (key === "id" || key === "_id"||key === "snapshots"|| key === "userId"|| key === "createdAt"|| key === "updatedAt"|| key === "__v"|| key === "count"||key === "snapshot") return null;
 
             return (
               <div key={key} className="flex flex-col">

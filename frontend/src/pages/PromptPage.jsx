@@ -4,26 +4,19 @@ import AddPromptModal from './../components/AddPromptModal';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
-import DropdownMenu from '../components/DropdownMenu';
 
 function PromptPage() {
   const { token } = useAuth();
   const backendUrl=import.meta.env.VITE_BACKEND_URL
-const [isModalOpen, setIsModalOpen] = useState(false);
-const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState("");
 
-const [company,setCompany]=useState([]);
-  const [companies, setCompanies] = useState([]);
+  const [data, setData] = useState([]);
 
-const [data, setData] = useState([]);
-const [score, setScore] = useState([]);
-  const fetchScore = async (companyId) => {
-    try {
 
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+ 
+
 
   const generateScoreAll = async () => {
     try {
@@ -35,32 +28,15 @@ const [score, setScore] = useState([]);
           },
         }
       );
-    
+            setNotification("Prompt analyzed successfully!");
+
     // Extract the nested data array    
     } catch (error) {
       console.error('Error:', error);
     }
-    
-  };  const fetchCompanies = async () => {
-    try {
-        const response = await axios.get(backendUrl+'/company/getall',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    
-    // Extract the nested data array
-    setCompanies(response.data.data); // Note the double .data
-    if(companies){
-      setCompany(companies[0]);
-    }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-    
-  };
+          setTimeout(() => setNotification(""), 5000);
+
+  };  
   const fetchData = async () => {
     try {
       const response = await axios.get(backendUrl+'/prompt/getall',
@@ -75,11 +51,6 @@ const [score, setScore] = useState([]);
       console.error('Error:', error);
     }
   };
-
-  useEffect(() => {
-  fetchCompanies();
-
-}, []);
   useEffect(() => {
     fetchData();
   
@@ -105,9 +76,16 @@ const fetchResponse = async () => {
   } catch (err) {
     console.error("Error fetching response:", err);
     // Handle error (show toast, set error state, etc.)
+              if (err.response) {
+    // Server responded with a status code outside 2xx
+          setNotification(err.response.data.error);
+        } else {
+          setNotification("Network error");
+        }
   } finally {
     setLoading(false);
   }
+    setTimeout(() => setNotification(""), 5000);
 };
     // 🔑 function to add data
     const addData = async (promptText) => {
@@ -122,11 +100,19 @@ const fetchResponse = async () => {
               Authorization: `Bearer ${token}`, 
             },
           }
+          
         );
+        setNotification("Prompt created successfully!");
       } catch (error) {
         console.error("Error:", error);
+          if (error.response) {
+    // Server responded with a status code outside 2xx
+          setNotification(error.response.data.error);
+        } else {
+          setNotification("Network error");
+        }
       }
-      
+      setTimeout(() => setNotification(""), 5000);
       fetchData();
     };
 
@@ -149,7 +135,13 @@ const fetchResponse = async () => {
       >
         + Add
       </button></div>
+      {notification && (
+        <div className="p-2 bg-green-100 text-green-700 border border-green-400 rounded mb-2">
+          {notification}
+        </div>
+      )}
       <div >              <p className="text-gray-600 mt-2">{data.length} of 25 prompts used</p></div>
+      
       </div>
       <div className=' mt-8 p-5'>
         <Table 
@@ -158,7 +150,6 @@ const fetchResponse = async () => {
         fetchData={fetchData}
         type="prompt"
         isPrompt={true}
-        fetchScore={fetchScore}
         />
       </div>
         <AddPromptModal

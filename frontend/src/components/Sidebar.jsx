@@ -9,6 +9,7 @@ export default function Sidebar() {
     { name: "Prompts", icon: "💬" ,nav:"/prompt"},
     { name: "Sources", icon: "🌐",nav:"/source" },
     { name: "Schools", icon: "🏢" ,nav:"/company"},
+    { name: "Setting", icon: "⚙️" ,nav:"/setting"},
   ];
 
   return (

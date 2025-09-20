@@ -21,7 +21,6 @@ const createPrompt=async(req,res)=>{
             })
         }
         const response=await PromptService.createPrompt(req.body,req.userId)
-        console.log('response',response)
         return res.status(200).json(response)
     }catch(e){
         return res.status(404).json({
@@ -42,7 +41,6 @@ const updatePrompt=async(req,res)=>{
             })
         }
         const response=await PromptService.updatePrompt(promptId,data)
-        console.log('response',response)
 
         return res.status(200).json(response)
     }catch(e){

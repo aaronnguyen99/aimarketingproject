@@ -7,28 +7,6 @@ const PromptService=require('../services/PromptService.js')
 const CompanyService=require('../services/CompanyService.js')
 const { default: mongoose } = require("mongoose");
 
-const createScore=async(req,res)=>{
-    try{
-        const {companyId,promptId,visible}=req.body        
-
-        if(visible===null||!companyId||!promptId)
-        {
-            return res.status(400).json({
-                status:'Err',
-                message:'The input is required error'
-            })
-        }
-            const score = new Score({ companyId, promptId, visible });
-            await score.save();
-            res.json({data: score });
-
-        return res.status(200).json(res)
-    }catch(e){
-        return res.status(404).json({
-            message:e
-        })
-    }
-}
 
 const getScoreDashboard = async (req, res) => {
   try {
@@ -147,7 +125,9 @@ const analyzeCompanyScores = async (req, res) => {
     const companiesResponse = await CompanyService.getAllCompany(req.userId);
     const companies = companiesResponse.data;
     const promptsResponse = await PromptService.getAllPrompt(req.userId);
-    const prompts = promptsResponse.data.filter(prompt => prompt.snapshot);
+    const prompts = promptsResponse.data.filter(prompt => prompt.snapshots);
+console.log("comapny",companies);
+console.log("prompt",promptsResponse);
 
     if ( !companies.length||!prompts.length) {
       return res.status(200).json({
@@ -235,7 +215,6 @@ for (const prompt of prompts) {
   }
 };
 module.exports={
-    createScore,
     analyzeCompanyScores,
     getScoreDashboard,
     getLastScore

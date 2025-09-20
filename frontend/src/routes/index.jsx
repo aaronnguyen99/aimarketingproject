@@ -5,12 +5,20 @@ import HomePage from "../pages/HomePage";
 import NotFoundPage from "../pages/NotFoundPage";
 import PromptPage from "../pages/PromptPage";
 import SourcesPage from "../pages/SourcesPage";
+import SettingPage from "../pages/SettingPage";
+
 import AuthPage from "../pages/AuthPage";
 
 export const routes=[
     {
         path:'/company',
         page:CompanyPage,
+        isShowSidebar:true
+
+    },
+    {
+        path:'/setting',
+        page:SettingPage,
         isShowSidebar:true
 
     },
