@@ -1,28 +1,23 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { useAuth } from "../contexts/AuthContext";
 import UpgradeButton from "../components/UpgradeButton";
+import api from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import LoadingPage from "./LoadingPage";
 
 export default function SettingsPage() {
-const { token } = useAuth();
-const backendUrl=import.meta.env.VITE_BACKEND_URL
-  const [user, setUser] = useState({ name: "", email: "", phone: "" ,organization:"",address:""});
+  const [user, setUser] = useState({ name: "", email: "", phone: "" ,organization:"",address:"",tier:""});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+ const {logout}=useAuth();
+   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
-      setLoading(true);
       try {
-        const response = await axios.get(backendUrl+'/auth/info',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-        setUser(response.data);
+        const response = await api.get('/auth/info');
+        setUser(response.data.user);
       } catch (err) {
         setError("Failed to load user data");
       } finally {
@@ -31,39 +26,43 @@ const backendUrl=import.meta.env.VITE_BACKEND_URL
     };
 
     fetchUser();
-  }, [token]);
+  },[]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
     try {
-        const response = await axios.put(backendUrl+'/auth/update',
-        {name: user.name, phone: user.phone,organization:user.organization,address:user.address},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setUser(response.data);           // update state with new info
+        const response = await api.put('/auth/update',{name: user.name, phone: user.phone,organization:user.organization,address:user.address});
+      setUser(response.data);           
       setSuccess("Profile updated successfully!");
-      setTimeout(() => setSuccess(""), 5000); // hide after 5s
+      setTimeout(() => setSuccess(""), 5000); 
     } catch (err) {
       setError(err.response?.data?.error || "Update failed");
     }
     
   };
 
+    const handleLogout = async () => {
+    try {
+      const response =await api.post("/auth/logout"); 
+      logout(); 
+      navigate("/auth"); 
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-600">{error}</p>;
-  if (!user) return null;
 
   return (
-<div className="max-w-xl mx-auto mt-8 p-6 bg-white rounded-xl shadow-md">
-  <h1 className="text-3xl font-bold mb-6 text-gray-800">Settings</h1>
+
+    <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto mb-8 ">
+            <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+            <p className="text-gray-600 mt-2">Update your information</p>
+        </div>
+      <div className="max-w-xl mx-auto">
 
   {/* Success/Error Messages */}
   {success && (
@@ -76,7 +75,11 @@ const backendUrl=import.meta.env.VITE_BACKEND_URL
       {error}
     </div>
   )}
-
+{loading ? (
+  <div className="flex justify-center py-4">
+    <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-b-4 border-gray-300"></div>
+  </div>
+) : (undefined)}
   <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-5">
     {/* Name */}
     <div>
@@ -124,7 +127,7 @@ const backendUrl=import.meta.env.VITE_BACKEND_URL
     <p className="mb-2 font-medium text-gray-700">
       Upgrade to Pro
     </p>
-    <UpgradeButton token={token} />
+    <UpgradeButton/>
   </div>
 )}
 
@@ -166,11 +169,19 @@ const backendUrl=import.meta.env.VITE_BACKEND_URL
     {/* Submit Button */}
     <button
       type="submit"
-      className="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+      className="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition inline-block"
     >
       Update Profile
     </button>
+
   </form>
+          <button
+      onClick={handleLogout}
+      className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 w-full mt-4"
+    >
+      Logout
+    </button>
+</div>
 </div>
   );
 }

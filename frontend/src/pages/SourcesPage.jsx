@@ -1,40 +1,30 @@
 import React from 'react'
 import SortTable from '../components/SortTable';
 import { useState } from 'react';
-import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { useEffect } from 'react';
+import api from '../services/api';
+import LoadingPage from './LoadingPage';
 
 const SourcesPage = () => {
   const [sources, setSources] = useState([]);
   const [count,setCount]=useState(0);
-  const { token } = useAuth();
-  const backendUrl=import.meta.env.VITE_BACKEND_URL;
+  const [loading, setLoading] = useState(true);
+
 
   const fetchSources = async () => {
     try {
-        const response = await axios.get(backendUrl+'/source/getall',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        const response = await api.get('/source/getall');
         setSources(response.data.data); 
-    console.log(sources);
     } catch (error) {
       console.error('Error:', error);
-    } 
+    } finally {
+    setLoading(false);
+  }
   };
     const fetchCount = async () => {
     try {
-        const response = await axios.get(backendUrl+'/prompt/getlength',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        const response = await api.get('/prompt/getlength');
         setCount(response.data.count); 
       
     } catch (error) {
@@ -53,7 +43,7 @@ const SourcesPage = () => {
         {/* Header */}
         <div className="mb-8 ">
           <h1 className="text-3xl font-bold text-gray-900">Sources</h1>
-          <p className="text-gray-600 mt-2">Here's where your data come from.</p>
+          <p className="text-gray-600 mt-2">Here's where your data come from</p>
         </div>
         <div className='p-5 border-t border-gray-300'>
         <SortTable
@@ -81,6 +71,7 @@ const SourcesPage = () => {
             }
             
           ]}
+          loading={loading}
           defaultSort={{ key: 'count', title: 'Count' }}
         />
       </div>

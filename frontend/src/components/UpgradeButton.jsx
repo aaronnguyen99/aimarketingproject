@@ -1,22 +1,20 @@
 // UpgradeButton.jsx
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import axios from "axios";
+import api from "../services/api";
 
-export default function UpgradeButton({ token }) {
-const backendUrl=import.meta.env.VITE_BACKEND_URL
+export default function UpgradeButton() {
   const createOrder = async () => {
-    const { data } = await axios.post(backendUrl+"/payment/create-order", {}, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const { data } = await api.post("/payment/create-order", {});
     console.log("data",data);
     return data.id;
   };
 
   const onApprove = async (data) => {
     try {
-      const { data: captureData } = await axios.post(backendUrl+"/payment/capture-order", {
+      const { data: captureData } = await api.post("/payment/capture-order", {
         orderId: data.orderID,
-      }, { headers: { Authorization: `Bearer ${token}` } });
+      });
 
       alert(captureData.message);
       window.location.reload(); // refresh to show updated tier

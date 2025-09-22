@@ -9,7 +9,8 @@ const SortTable = ({
   rowClassName = "hover:bg-gray-50",
   cellClassName = "",
   emptyMessage = "No data available",
-  promptCount
+  promptCount,
+  loading
 }) => {
   const [sortConfig, setSortConfig] = React.useState(defaultSort);
   const sortedData = React.useMemo(() => {
@@ -35,8 +36,9 @@ const SortTable = ({
   if (data.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
-        {emptyMessage}
-      </div>
+<div className="flex justify-center py-4">
+    <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-b-4 border-gray-300"></div>
+  </div>      </div>
     );
   }
 

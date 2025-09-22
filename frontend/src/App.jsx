@@ -2,14 +2,35 @@ import React, { Fragment, useEffect } from 'react'
 import {BrowserRouter as Router,Routes,Route} from 'react-router-dom'
 import {routes} from './routes'
 import DefaultComponent from './components/DefaultComponent'
-import { AuthProvider } from './contexts/AuthContext';
+import {  useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthPages from './pages/AuthPage';
 import HomePage from './pages/HomePage';
+import { useState } from 'react';
+import api from './services/api';
+import LoadingPage from './pages/LoadingPage';
 export default function App() {
+  const { user, login, logout } = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await api.get("/auth/info"); // cookie sent automatically
+        login(response.data.user); // restore state
+        console.log("respone",response.data.user);
+      } catch (err) {
+        logout(); // user not logged in
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+    if (loading) return <LoadingPage/> // optional loading state
 
   return (
-    <AuthProvider>
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -33,6 +54,5 @@ export default function App() {
 
         </Routes>
       </Router>
-   </AuthProvider>   
   )
 }

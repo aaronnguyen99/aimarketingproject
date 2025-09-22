@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Eye, EyeOff, User, Mail, Lock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const AuthPages = () => {
-const{login} =useAuth();
+const{login,logout} =useAuth();
   const navigate = useNavigate();
   const backendUrl=import.meta.env.VITE_BACKEND_URL
 
@@ -32,41 +33,31 @@ const{login} =useAuth();
     setLoading(true);
     setError('');
 
-    try {
-      const endpoint = isLogin ? '/auth/login' : '/auth/signup';
-      const payload = isLogin 
-        ? { email: formData.email, password: formData.password }
-        : formData;
+      try {
+    const endpoint = isLogin ? "/auth/login" : "/auth/signup";
+    const payload = isLogin
+      ? { email: formData.email, password: formData.password }
+      : formData;
 
-      // Replace with your actual API call
-      const response = await fetch(backendUrl+`${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+    const response = await api.post(endpoint, payload);
+    const data = response.data; // axios parses JSON automatically
 
-      const data = await response.json();
+    // Success - store user in state only (token handled by cookie)
+    login(data.user);
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong');
-      }
-
-      // Success - store token and redirect
-      console.log('Success:', data);
-      // In a real app, use React state instead of localStorage
-    login(data.token, data.user);
-    navigate('/prompt');
-      alert(`${isLogin ? 'Login' : 'Signup'} successful!`);
-      
-      
-    } catch (err) {
+    // redirect
+    navigate("/prompt");
+  } catch (err) {
+    // axios errors have response.data if backend sent error
+    if (err.response?.data?.error) {
+      setError(err.response.data.error);
+    } else {
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
@@ -99,26 +90,6 @@ const{login} =useAuth();
 
         {/* Form */}
         <div className="space-y-6">
-          {/* Name Field (Only for Signup)
-          {!isLogin && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                  placeholder="Enter your full name"
-                  required={!isLogin}
-                />
-              </div>
-            </div>
-          )} */}
 
           {/* Email Field */}
           <div>

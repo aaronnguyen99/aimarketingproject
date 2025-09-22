@@ -1,50 +1,33 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };
 
 export const AuthProvider = ({ children }) => {
-  // Initialize from sessionStorage
-  const [token, setToken] = useState(() => {
-    return sessionStorage.getItem('token') || null;
-  });
-  const [user, setUser] = useState(() => {
-    const savedUser = sessionStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return !!sessionStorage.getItem('token');
-  });
+  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const login = (tokenData, userData) => {
-    setToken(tokenData);
+  const login = (userData) => {
     setUser(userData);
     setIsAuthenticated(true);
-    
-    // Persist to sessionStorage
-    sessionStorage.setItem('token', tokenData);
-    sessionStorage.setItem('user', JSON.stringify(userData));
+    // ✅ token is in HTTP-only cookie, nothing to store in JS
   };
 
   const logout = () => {
-    setToken(null);
     setUser(null);
     setIsAuthenticated(false);
-    
-    // Clear from sessionStorage
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user');
+    // frontend does not touch token; backend clears cookie on /logout
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

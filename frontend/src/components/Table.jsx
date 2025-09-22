@@ -4,10 +4,9 @@ import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 import OptionModal from "./OptionModal";
 import EditModal from "./EditModal";
+import api from "../services/api";
 
 const Table = (props) => {
-  const { token } = useAuth();
-  const backendUrl=import.meta.env.VITE_BACKEND_URL
 const [isConversationModalOpen, setIsConversationModalOpen] = useState(false);
 const [selectedRow, setSelectedRow] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
@@ -30,14 +29,7 @@ const openModal  = (id) => {
   };
 const handleRemoveRow = async (idx) => {
       try {
-        const response = await axios.delete(
-          backendUrl+"/"+props.type+"/delete/"+idx,
-          { 
-            headers: {
-              Authorization: `Bearer ${token}`, 
-            },
-          }
-        );
+        const response = await api.delete("/"+props.type+"/delete/"+idx);
         console.log(response.data);
       } catch (error) {
         console.error("Error:", error);
@@ -60,15 +52,8 @@ const handleRemoveRow = async (idx) => {
   };
 const handleEditRow = async (updatedData) => {
       try {
-        const response = await axios.put(
-          backendUrl+"/"+props.type+"/update/"+updatedData._id,
-          updatedData,
-          { 
-            headers: {
-              Authorization: `Bearer ${token}`, 
-            },
-          }
-        );
+        const response = await api.put("/"+props.type+"/update/"+updatedData._id,
+          updatedData);
         console.log(response.data);
       } catch (error) {
         console.error("Error:", error);
@@ -76,6 +61,9 @@ const handleEditRow = async (updatedData) => {
       
       props.fetchData();
 };
+if(props.loading) return     <div className="flex justify-center py-4">
+    <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-b-4 border-gray-300"></div>
+  </div>
   return (
     <div className="w-full text-left rounded-2xl shadow-md">
       <table className="w-full bg-white ">

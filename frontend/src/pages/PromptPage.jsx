@@ -4,73 +4,48 @@ import AddPromptModal from './../components/AddPromptModal';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
+import LoadingPage from './LoadingPage';
 
 function PromptPage() {
-  const { token } = useAuth();
-  const backendUrl=import.meta.env.VITE_BACKEND_URL
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [load,setLoad]=useState(true);
   const [notification, setNotification] = useState("");
-
   const [data, setData] = useState([]);
-
-
- 
-
-
   const generateScoreAll = async () => {
     try {
-        const response = await axios.post(backendUrl+'/score/analyze',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        const response = await api.post('/score/analyze',{});
             setNotification("Prompt analyzed successfully!");
 
     // Extract the nested data array    
     } catch (error) {
       console.error('Error:', error);
+    }finally{
+          setLoading(false);
+
     }
           setTimeout(() => setNotification(""), 5000);
 
   };  
   const fetchData = async () => {
     try {
-      const response = await axios.get(backendUrl+'/prompt/getall',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.get('/prompt/getall');
     setData(response.data.data);
     } catch (error) {
       console.error('Error:', error);
+    }finally{
+      setLoad(false);
     }
   };
   useEffect(() => {
     fetchData();
   
-}, );
+}, []);
 const fetchResponse = async () => {
   try {
     setLoading(true);
-    const response = await axios.post(
-      backendUrl + '/prompt/analyze',
-      {}, // Empty data object since you're not sending any body data
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    
-    // Handle the response
-    // You might want to update some state with the response
-    // setAnalysisResult(response.data);
+    const response = await api.post('/prompt/analyze',{});
       fetchData();
       generateScoreAll();
   } catch (err) {
@@ -82,25 +57,16 @@ const fetchResponse = async () => {
         } else {
           setNotification("Network error");
         }
-  } finally {
-    setLoading(false);
-  }
+  } 
     setTimeout(() => setNotification(""), 5000);
 };
     // 🔑 function to add data
     const addData = async (promptText) => {
       try {
-        const response = await axios.post(
-          backendUrl+"/prompt/create",
+        const response = await api.post("/prompt/create",
           { 
             content: promptText 
-          },
-          { 
-            headers: {
-              Authorization: `Bearer ${token}`, 
-            },
           }
-          
         );
         setNotification("Prompt created successfully!");
       } catch (error) {
@@ -115,15 +81,13 @@ const fetchResponse = async () => {
       setTimeout(() => setNotification(""), 5000);
       fetchData();
     };
-
-
   return (
         <div className="min-h-screen bg-gray-50 p-6">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900">Prompts</h1>
-              <p className="text-gray-600 mt-2">Add prompts to be analyzed daily.</p>
+              <p className="text-gray-600 mt-2">Add prompts to be analyzed daily</p>
             </div>
 
         
@@ -150,6 +114,7 @@ const fetchResponse = async () => {
         fetchData={fetchData}
         type="prompt"
         isPrompt={true}
+        loading={load}
         />
       </div>
         <AddPromptModal

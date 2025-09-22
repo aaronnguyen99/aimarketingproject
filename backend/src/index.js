@@ -3,15 +3,19 @@ const express = require("express");
 const { default: mongoose } = require("mongoose");
 const dotenv = require ("dotenv");
 const routes=require('./routes/index.js')
-
-dotenv.config()
+const cookieParser =require("cookie-parser") ;
+const cors = require("cors");
 const app = express();
 
-const cors = require("cors");
-app.use(cors());
+dotenv.config()
 
+app.use(cors({
+  origin: "http://localhost:5173", // your frontend URL
+  credentials: true,              // allow cookies
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 routes(app);
 

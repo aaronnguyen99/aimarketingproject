@@ -1,20 +1,19 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Users, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react';
-import axios from 'axios';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import SortTable from '../components/SortTable';
+import api from '../services/api';
+import LoadingPage from './LoadingPage';
 
 const Dashboard = () => {
-
-  const { token } = useAuth();
-  const backendUrl=import.meta.env.VITE_BACKEND_URL;
   const [companies, setCompanies] = useState([]);
   const [chart,setChart] = useState([]);
   const [dataTable,setDataTable] = useState([]);
   const [sources,setSources]=useState([]);
+  const [loading, setLoading] = useState(true);
 
   const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#b6379aff', '#b66363ff', '#361529ff', '#f70098ff', '#5a0e0eff', '#00ff15ff', '#8c00e9ff', '#8b5cf6'];
   const timeRange=[
@@ -32,50 +31,24 @@ const Dashboard = () => {
       if(time){
         range='?time='+time;
       }
-          const response = await axios.get(backendUrl+'/score/getlast'+range,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+          const response = await api.get('/score/getlast'+range);
       setDataTable(response.data.data); 
-      console.log("data",dataTable);
       } catch (error) {
         console.error('Error:', error);
       } 
     };
   const fetchSources = async () => {
     try {
-        const response = await axios.get(backendUrl+'/source/gettop',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        const response = await api.get('/source/gettop');
       setSources(response.data.data);
-    console.log('Full response:', response.data);
-    console.log('Companies array:', response.data.data);
-    
-    // Extract the nested data array
-    setSources(response.data.data); // Note the double .data
-    console.log(sources);
     } catch (error) {
       console.error('Error:', error);
     } 
     
   };
-      const fetchCompanies = async () => {
+  const fetchCompanies = async () => {
       try {
-          const response = await axios.get(backendUrl+'/company/getall',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-          console.log('Companies array:', response.data.data);
+          const response = await api.get('/company/getall');
           setCompanies(response.data.data); 
       } catch (error) {
         console.error('Error:', error);
@@ -99,13 +72,7 @@ useEffect(() => {
       }
       console.log(range);
           const promises = companies.map(company => 
-        axios.get(backendUrl+'/score/getdashboard?companyId='+company._id+range,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              )
+        api.get('/score/getdashboard?companyId='+company._id+range)
         );
             const responses = await Promise.all(promises);
     const combinedData = {};
@@ -131,6 +98,8 @@ useEffect(() => {
     // Extract the nested data array
     } catch (error) {
       console.error('Error:', error);
+    }finally {
+      setLoading(false); 
     }
   };
 const downloadCSV = (data, filename = "scores.csv") => {
@@ -178,13 +147,14 @@ const downloadCSV = (data, filename = "scores.csv") => {
   link.click();
   document.body.removeChild(link);
 };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8 ">
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-2">Welcome back! Here's what's happening with your business.</p>
+          <p className="text-gray-600 mt-2">Welcome back! Here's what's happening with your business</p>
              <div className="p-4 flex justify-between w-full border-b border-gray-300">
               <div className="gap-6 mb-8">
                 <select
@@ -221,7 +191,6 @@ const downloadCSV = (data, filename = "scores.csv") => {
                             { key: 'avgVisibility', title: 'Visible' },
                             { key: 'avgPosition', title: 'Position' },
                             { key: 'avgSentiment', title: 'Sentiment' },
-                            {key:'isYour'}
                             ]}
                 defaultSort={{ key: 'avgVisibility', title: 'Visible' }}
                 />
@@ -240,6 +209,11 @@ const downloadCSV = (data, filename = "scores.csv") => {
               </span>
             </div>
             </div>
+            {loading ? (
+              <div className="flex justify-center items-center h-[250px]">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500 border-b-4 border-gray-300"></div>
+              </div>
+            ) : (
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chart}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -270,7 +244,7 @@ const downloadCSV = (data, filename = "scores.csv") => {
 
               </LineChart>
             </ResponsiveContainer>
-            
+            )}
           </div>
 
           {/* Line Chart */}
@@ -286,6 +260,11 @@ const downloadCSV = (data, filename = "scores.csv") => {
               Average ranking of your school in AI responses              </span>
             </div>
             </div>
+              {loading ? (
+              <div className="flex justify-center items-center h-[250px]">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500 border-b-4 border-gray-300"></div>
+              </div>
+            ) : (
            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chart}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -316,7 +295,7 @@ const downloadCSV = (data, filename = "scores.csv") => {
 
               </LineChart>
             </ResponsiveContainer>
-            
+            )}
           </div>
                     <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className='flex justify-between mb-6'>
@@ -330,6 +309,11 @@ const downloadCSV = (data, filename = "scores.csv") => {
             VADER sentiment analysis of the schools mentioned in AI responses              </span>
             </div>
             </div>
+            {loading ? (
+              <div className="flex justify-center items-center h-[250px]">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500 border-b-4 border-gray-300"></div>
+              </div>
+            ) : (
            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chart}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -360,7 +344,7 @@ const downloadCSV = (data, filename = "scores.csv") => {
 
               </LineChart>
             </ResponsiveContainer>
-            
+            )}
           </div>
           <div className="bg-white p-6 rounded-lg shadow-sm border">    
               <div className='flex justify-between mb-6'>
@@ -379,7 +363,6 @@ const downloadCSV = (data, filename = "scores.csv") => {
               columns={[  { key: 'url', title: 'Domain' },
                           { key: 'count', title: 'Count' }]}
               defaultSort={{ key: 'count', title: 'Count' }}
-              
               />
             </div>
         </div>

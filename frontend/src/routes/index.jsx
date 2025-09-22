@@ -1,14 +1,10 @@
 import CompanyPage from "../pages/CompanyPage";
-import CompetitorPage from "../pages/CompetitorsPage";
 import DashboardPage from "../pages/DashboardPage";
-import HomePage from "../pages/HomePage";
 import NotFoundPage from "../pages/NotFoundPage";
 import PromptPage from "../pages/PromptPage";
 import SourcesPage from "../pages/SourcesPage";
 import SettingPage from "../pages/SettingPage";
-
-import AuthPage from "../pages/AuthPage";
-
+import LoadingPage from "../pages/LoadingPage";
 export const routes=[
     {
         path:'/company',
@@ -17,14 +13,14 @@ export const routes=[
 
     },
     {
-        path:'/setting',
-        page:SettingPage,
+        path:'/loading',
+        page:LoadingPage,
         isShowSidebar:true
 
     },
     {
-        path:'/competitor',
-        page:CompetitorPage,
+        path:'/setting',
+        page:SettingPage,
         isShowSidebar:true
 
     },
