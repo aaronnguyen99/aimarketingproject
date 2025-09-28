@@ -102,11 +102,9 @@ const analyzeprompt = async (req, res) => {
     const processPrompt = async (item) => {
       try {
             const gpt5Response = await openai.responses.create({
-                    model: "gpt-5",
+                    model: "gpt-5-mini",
           tools: [
-            {
-              type: "web_search", 
-            }
+              { type: "web_search" },
           ],
           input:item.content,
         });

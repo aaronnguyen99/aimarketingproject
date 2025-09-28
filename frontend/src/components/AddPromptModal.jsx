@@ -1,8 +1,16 @@
 import React, { useState } from "react";
+import CountrySelect from "./CountrySelect";
 
 const AddPromptModal = ({ isOpen, onClose, onAdd }) => {
   const [prompt, setPrompt] = useState("");
-
+const countries = [
+  { name: "Canada", code: "CA" },
+  { name: "United States", code: "US" },
+];
+const getFlag = (countryCode) =>
+  countryCode
+    .toUpperCase()
+    .replace(/./g, char => String.fromCodePoint(127397 + char.charCodeAt()));
   const handleAdd = () => {
     if (!prompt.trim()) return; // don't add empty prompt
     onAdd(prompt);
@@ -32,6 +40,7 @@ const AddPromptModal = ({ isOpen, onClose, onAdd }) => {
                      text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
                      focus:border-blue-500 transition duration-200 resize-none break-words"
         />
+        <CountrySelect/>
         <div className="flex mt-9 ">
           {/* Add button */}
           <button

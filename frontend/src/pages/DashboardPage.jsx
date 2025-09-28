@@ -173,11 +173,12 @@ const downloadCSV = (data, filename = "scores.csv") => {
               </div>
             <div >
                 <div><button
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition flex items-center gap-2"
                   onClick={() => downloadCSV(chart)}
                 >
+                  <span className="border-gray-300 text-gray-700 ">📄</span>
                   Export CSV
-              </button></div>     
+                </button></div>     
             </div> 
 
         </div>

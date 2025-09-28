@@ -50,16 +50,6 @@ const SourcesPage = () => {
           data={sources}
           columns={[
             { key: 'url', title: 'Domain' },
-            // { 
-            //   key: 'count', 
-            //   title: 'Percents used',
-            //   render: (value, row) => {
-            //     // normalize by total count
-            //     const totalCount = sources.reduce((sum, r) => sum + (r.count || 0), 0);
-            //     if (!totalCount) return "0%";
-            //     return ((row.count || 0) / totalCount * 100).toFixed(2) + "%";
-            //   }
-            // },
             { 
               key: 'count', 
               title: 'Average usage', 
