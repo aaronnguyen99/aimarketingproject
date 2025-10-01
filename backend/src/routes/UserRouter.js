@@ -73,8 +73,8 @@ router.post('/login', async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       // secure: process.env.NODE_ENV === "production", // false on localhost
-      secure:false,
-      sameSite: "lax", // can be "strict" if frontend/backend same origin
+      secure:true,
+      sameSite: "none", // can be "strict" if frontend/backend same origin
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.json({user: { id: user._id, email: user.email, name: user.name } });
@@ -87,8 +87,8 @@ router.post("/logout", (req, res) => {
   res.clearCookie("token", {
       httpOnly: true,
       // secure: process.env.NODE_ENV === "production", // false on localhost
-      secure:false,
-      sameSite: "lax" // can be "strict" if frontend/backend same origin
+      secure:true,
+      sameSite: "none" // can be "strict" if frontend/backend same origin
     });
   res.json({ message: "Logged out" });
 });
