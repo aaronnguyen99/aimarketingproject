@@ -8,10 +8,14 @@ const cors = require("cors");
 const app = express();
 
 dotenv.config()
-
+const allowedOrigins = [
+  "http://localhost:5173",                 // local dev frontend
+  "https://aimarketingproject-frontend.onrender.com",    // Render static site
+  "https://meiryo.ca"       // optional custom domain
+];
 app.use(cors({
-  origin: process.env.FRONTEND_URL, // your frontend URL
-  credentials: true,              // allow cookies
+  origin: allowedOrigins,
+  credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,14 +35,6 @@ mongoose.connect(`${process.env.MONGO_DB}`)
 .catch((err)=>{
     console.log(err)
 })
-
-// --- Serve React build files ---
-app.use(express.static(path.join(__dirname, "../../frontend/dist")));
-
-// --- Catch-all (for React Router SPA) ---
-app.get(/(.*)/, (req, res) => {
-  res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
-});
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
