@@ -46,7 +46,7 @@ const Contact = () => {
         </form>
 
         <div className="mt-10 text-center text-gray-700 space-y-2">
-          <p>Email: <a href="mailto:support@meriyoai.com" className="text-sky-500 hover:underline">support@meriyoai.com</a></p>
+          <p>Email: <a href="mailto:support@meiryoai.com" className="text-sky-500 hover:underline">support@meiryoai.com</a></p>
           <p>Phone: <a href="tel:+1234567890" className="text-sky-500 hover:underline">+1 (234) 567-890</a></p>
         </div>
       </div>

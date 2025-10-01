@@ -12,7 +12,7 @@ export default function Header() {
         <div   onClick={() => {
     const hero = document.getElementById("hero");
     if (hero) hero.scrollIntoView({ behavior: "smooth" });
-  }} className="cursor-pointer text-2xl font-bold text-gray-800">MeriyoAI</div>
+  }} className="cursor-pointer text-2xl font-bold text-gray-800">MeiryoAI</div>
 
         {/* Navigation */}
         <nav className="flex items-center space-x-6">
