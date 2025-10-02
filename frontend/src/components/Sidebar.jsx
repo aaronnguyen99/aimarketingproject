@@ -5,7 +5,6 @@ import {routes} from '../routes/index'
 export default function Sidebar() {
   const navigate=useNavigate();
   const navItems = [
-        { name: "Home", icon: "🏠" ,nav:"/"},
     { name: "Dashboard", icon: "📊" ,nav:"/dashboard"},
     { name: "Prompts", icon: "💬" ,nav:"/prompt"},
     { name: "Sources", icon: "🌐",nav:"/source" },

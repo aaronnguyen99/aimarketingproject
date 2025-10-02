@@ -4,15 +4,27 @@ const AddCompanyModal = ({ isOpen, onClose, onAdd }) => {
   const [company, setCompany] = useState("");
   const [domain,setDomain]= useState("");
   const [isYour,setIsYour]=useState(false);
+  const [error, setError] = useState("");
+
   const handleAdd = () => {
-    if (!company.trim()) return; // don't add empty prompt
-    onAdd(company,domain,isYour);
+  if (!company.trim()) {
+    setError("* School name is required");
+    return;
+  }
+      onAdd(company,domain,isYour);
     setCompany(""); // reset textarea
     setDomain("");
     setIsYour(false);
+    setError("");  // clear error
     onClose(); // close modal
   };
-
+const handleClose = () => {
+  setCompany("");
+  setDomain("");
+  setIsYour(false);
+  setError("");  // clear error
+  onClose(); // call parent close
+};
   if (!isOpen) return null;
 
   return (
@@ -20,23 +32,25 @@ const AddCompanyModal = ({ isOpen, onClose, onAdd }) => {
       <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl p-8">
        
         {/* Title */}
-        <h2 className="text-lg font-semibold mb-2">Add Company and Organization</h2>
+        <h2 className="text-lg font-semibold mb-2">Add School Name and Website</h2>
         <p className="text-sm text-gray-500 mb-4">
-            For the best results, please provide both the company name and its domain.</p>
+            For the best results, please provide both the school name and its website URL</p>
         {/* Textarea */}
         <textarea
           value={company}
           onChange={(e) => setCompany(e.target.value)}
-          placeholder="Enter company name (required)"
+          placeholder="Enter school name (e.g. University of Manitoba) *"
           maxLength={200}
           className="w-full h-15 px-4 py-3 rounded-lg border border-gray-300 shadow-sm
                      text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
                      focus:border-blue-500 transition duration-200 resize-none break-words"
         />
+                {error && <p className="text-red-500 font-semibold">{error}</p>}
+
         <textarea
           value={domain}
           onChange={(e) => setDomain(e.target.value)}
-          placeholder="Enter company website"
+          placeholder="Enter school website (e.g. www.umanitoba.ca)"
           maxLength={200}
           className="w-full h-15 px-4 py-3 rounded-lg border border-gray-300 shadow-sm
                      text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
@@ -61,7 +75,7 @@ const AddCompanyModal = ({ isOpen, onClose, onAdd }) => {
           </button>
           {/* Close button */}
                   <button
-            onClick={onClose}
+            onClick={handleClose}
             className="ml-auto mt-4 px-4 py-2 bg-red-400 text-white px-3 py-1 hover:bg-red-600 transition-colors font-medium rounded-lg shadow transition"
           >
             Cancel

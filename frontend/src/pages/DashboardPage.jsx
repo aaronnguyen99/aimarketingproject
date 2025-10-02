@@ -14,7 +14,8 @@ const Dashboard = () => {
   const [dataTable,setDataTable] = useState([]);
   const [sources,setSources]=useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [user, setUser] = useState({ name: "", email: "", phone: "" ,organization:"",address:"",tier:""});
+  const [description,setDescription]=useState("")
   const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#b6379aff', '#b66363ff', '#361529ff', '#f70098ff', '#5a0e0eff', '#00ff15ff', '#8c00e9ff', '#8b5cf6'];
   const timeRange=[
     {key:"all", value:1000,name:"All time"},
@@ -25,6 +26,36 @@ const Dashboard = () => {
     {key:"year", value:365,name:"This year"},
   ]
     const [time, setTime] = useState(timeRange[0].value); // default selected value
+
+   const setHeader = async () => {
+      try {
+      let time="";
+      const now = new Date();
+      const hour = now.getHours();
+      if(hour<=4||hour>=19){
+        time="evening";
+      }else if(hour>4&&hour<12){
+        time="morning";
+      }else{
+        time="afternoon";
+      }
+
+      const des="Good "+time+ ", " +user.name+"! Here's how " +user.organization+ " is showing up in AI Search"
+      setDescription(des)
+      } catch (error) {
+        console.error('Error:', error);
+      } 
+    };
+    const fetchUser = async () => {
+      try {
+        const response = await api.get('/auth/info');
+        setUser(response.data.user);
+      } catch (err) {
+        setError("Failed to load user data");
+      } finally {
+        setLoading(false);
+      }
+    };
   const fetchTable = async () => {
       try {
       let range="?time=1000";
@@ -55,6 +86,7 @@ const Dashboard = () => {
       } 
     };
   useEffect(() => {
+  fetchUser();
   fetchCompanies();
   fetchSources();
 }, []);
@@ -64,6 +96,9 @@ useEffect(() => {
       fetchTable();
   }
 }, [companies,time]);
+useEffect(() => {
+  setHeader();
+}, [user]);
     const fetchScore = async () => {
     try {
       let range="&time=1000";
@@ -154,7 +189,7 @@ const downloadCSV = (data, filename = "scores.csv") => {
         {/* Header */}
         <div className="mb-8 ">
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-2">Welcome back! Here's what's happening with your business</p>
+          <p className="text-gray-600 mt-2">{description}</p>
              <div className="p-4 flex justify-between w-full border-b border-gray-300">
               <div className="gap-6 mb-8">
                 <select
@@ -173,7 +208,7 @@ const downloadCSV = (data, filename = "scores.csv") => {
               </div>
             <div >
                 <div><button
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition flex items-center gap-2"
+                  className="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition flex items-center gap-2"
                   onClick={() => downloadCSV(chart)}
                 >
                   <span className="border-gray-300 text-gray-700 ">📄</span>

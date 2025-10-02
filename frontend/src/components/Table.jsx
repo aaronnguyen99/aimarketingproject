@@ -111,27 +111,43 @@ if(props.loading) return     <div className="flex justify-center py-4">
               })}</td>
               <td className="py-3 px-6 flex items-center gap-2"> 
                 { props.isPrompt &&(
-
+                  <div className="relative group inline-block">
                 <button
                   onClick={() => {
                         setSelectedRow(row);
                         setIsConversationModalOpen(true);
                       }
                   }
-                  className="flex items-center gap-2 px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors font-medium">
+                  className="cursor-pointer flex items-center gap-2 px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors font-medium">
                   👁️‍🗨️
-                </button>)
+                </button>  
+                <span className="absolute bottom-full right-0 mb-2 hidden group-hover:block 
+                   bg-gray-800 text-white text-sm px-2 py-1 rounded shadow-lg">
+                  View
+                </span></div>)
                 }
+                <div className="relative group inline-block">
                 <button
                   onClick={() => openEdit(row)}
-                  className="flex items-center gap-2 px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors font-medium">
+                  className="cursor-pointer flex items-center gap-2 px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors font-medium">
                   🖊️
-                </button>
-                  <button
-                  onClick={() => openModal (row._id)}
-                  className="flex items-center gap-2 px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors font-medium">
-                  🗑️
-                </button>
+                </button>                
+                <span className="absolute bottom-full right-0 mb-2 hidden group-hover:block 
+                   bg-gray-800 text-white text-sm px-2 py-1 rounded shadow-lg">
+                  Edit
+                </span></div>
+                <div className="relative group inline-block">
+                    <button
+                    onClick={() => openModal (row._id)}
+                    className="cursor-pointer flex items-center gap-2 px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors font-medium">
+                    🗑️
+                    </button>
+                    <span className="absolute bottom-full right-0 mb-2 hidden group-hover:block 
+                    bg-gray-800 text-white text-sm px-2 py-1 rounded shadow-lg">
+                    Delete
+                  </span>
+                </div>
+                
               </td>
             </tr>
           ))}

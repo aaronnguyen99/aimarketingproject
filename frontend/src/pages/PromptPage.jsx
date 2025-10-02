@@ -95,7 +95,7 @@ const fetchResponse = async () => {
         <div>
         <button
         onClick={() => setIsModalOpen(true)}
-        className="max-w-md mb-4 px-4 py-2 bg-black text-white rounded-lg "
+        className="cursor-pointer max-w-md mb-4 px-4 py-2 bg-black text-white rounded-lg "
       >
         + Add
       </button></div>
