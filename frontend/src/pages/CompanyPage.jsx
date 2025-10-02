@@ -50,7 +50,7 @@ const CompanyPage = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Schools</h1>
-          <p className="text-gray-600 mt-2">Add schools and organizations you want to keep track</p>
+          <p className="text-gray-600 mt-2">Add schools you want to keep track</p>
         </div>
 
 
@@ -58,7 +58,7 @@ const CompanyPage = () => {
         <div className="flex self-end  mb-4 border-b border-gray-300">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="max-w-md mb-4 px-4 py-2 bg-black text-white rounded-lg "
+            className="cursor-pointer max-w-md mb-4 px-4 py-2 bg-black text-white rounded-lg "
           >
             + Add
         </button>

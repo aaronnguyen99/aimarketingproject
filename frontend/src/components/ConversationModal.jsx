@@ -39,10 +39,10 @@ const normalizeMarkdown = (text) => {
         </p>
       </div>
     <div className="p-4">
-      <SnapshotSelector
+      {/* <SnapshotSelector
         snapshots={data.snapshots}
         onSelect={setSelectedModel}
-      />
+      /> */}
     </div>
       {/* Result */}
       <div className="p-6 border-l-4 border-emerald-500 rounded-xl bg-white shadow-sm prose prose-gray max-w-none">
