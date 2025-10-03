@@ -9,8 +9,19 @@ const pMap = pMapModule.default || pMapModule;
 
 router.post("/analyze", async (req, res) => {
   try {
-    const proUsers = await User.find({ tier: "pro" });
+    const now = new Date();
 
+    const proUsers = await User.find({
+    $or: [
+        { tier: "pro" },
+        { 
+        $and: [
+            { tier: "free" },
+            { freeTrialEnds: { $gt: now } }  // free trial not expired yet
+        ]
+        }
+    ]
+    });
     const concurrency = 5;
 
     // Process analyzePrompt concurrently with p-map
