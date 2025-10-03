@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {routes} from '../routes/index'
+import CountdownClock from "./CountdownClock";
 
 export default function Sidebar() {
   const navigate=useNavigate();
@@ -37,14 +38,17 @@ export default function Sidebar() {
 
               </div>
               {item.badge && (
-                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                <span className="bg-blue-100 text-black px-2 py-0.5 rounded-full text-xs font-light">
                   {item.badge}
                 </span>
               )}
             </button>
           ))}
         </nav>
-      </div>
+        <div className="absolute bottom-0 p-4">
+          <CountdownClock />
+        </div>      
+  </div>
     </div>
   );
 }
