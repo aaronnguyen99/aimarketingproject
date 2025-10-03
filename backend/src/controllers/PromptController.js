@@ -108,12 +108,8 @@ const analyzeprompt = async (req, res) => {
           ],
           input:item.content,
         });
-  const geminiResponse = await gemini.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: item.content,
-  });
         const gptOutput = gpt5Response.output_text || "No output";
-        const geminiOutput = geminiResponse.text || "No output";
+        // const geminiOutput = geminiResponse.text || "No output";
 
         const source=extractBrackets(gptOutput);
 
@@ -127,7 +123,7 @@ const analyzeprompt = async (req, res) => {
           item._id,
           {      snapshots: {
         gpt5: gptOutput,
-        gemini: geminiOutput,
+        // gemini: geminiOutput,
       }, content: item.content,count:item.count }
         );
 
