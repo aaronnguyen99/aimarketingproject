@@ -122,7 +122,7 @@ const fetchResponse = async () => {
         onClose={() => setIsModalOpen(false)}
         onAdd={addData}
       />
-        <button
+        {/* <button
           onClick={() => fetchResponse()}
 
           disabled={loading}
@@ -131,7 +131,7 @@ const fetchResponse = async () => {
             text-white shadow`}
         >
           {loading ? "Analyzing..." : "Analyze"}
-        </button>
+        </button> */}
     </div>
         </div>  
   );

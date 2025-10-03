@@ -3,8 +3,8 @@ const User = require("../schema/UserModel");
 
 const checkPrompt = async (req, res, next) => {
  const tierLimits = { 
-  free: 10,     // Free users get 20 prompts
-  pro: 20,
+  free: 10,     
+  pro: 25,
   expired: 0
 };   
 
