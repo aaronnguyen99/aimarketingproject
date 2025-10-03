@@ -36,5 +36,12 @@ mongoose.connect(`${process.env.MONGO_DB}`)
     console.log(err)
 })
 
+app.use(express.static(path.join(__dirname, "dist"))); // or "build"
+
+// Catch-all for React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html")); // or "build"
+});
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
