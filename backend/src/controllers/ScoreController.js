@@ -139,7 +139,7 @@ console.log("prompt",promptsResponse);
     
     const scores = [];
 
-const models = ["gpt5", "gemini"]; // keys in snapshots
+const models = ["gpt5"]; 
 
 for (const prompt of prompts) {
   for (const model of models) {
