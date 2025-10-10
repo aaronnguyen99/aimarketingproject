@@ -3,7 +3,7 @@ const scoreSchema=new mongoose.Schema(
     {
         companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
         promptId: { type: mongoose.Schema.Types.ObjectId, ref: 'Prompt', required: true },
-        visible: {type: Boolean,required: true,default:false},
+        visibleScore:{type:Number,required: true,default:0},
         position:{type:Number,required: true,default:0},
         sentiment:{type:Number,required: true,default:0},
         model:{type:String},
