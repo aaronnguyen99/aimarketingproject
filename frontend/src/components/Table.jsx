@@ -74,6 +74,9 @@ if(props.loading) return     <div className="flex justify-center py-4">
               {"DOMAIN"}
             </th>)}
             <th className="py-3 px-6">{!props.isPrompt ? "Date added" :"Created"}</th>
+            {props.isPrompt&&(<th className="py-3 px-6">
+              {"GEO"}
+            </th>)}
             <th className="py-3 px-6">Options</th>
           </tr>
         </thead>
@@ -109,6 +112,14 @@ if(props.loading) return     <div className="flex justify-center py-4">
                   month: "short",
                   day: "numeric"
               })}</td>
+                {props.isPrompt&&(
+                  <td className="py-3 px-6  border-r-1 border-solid border-gray-200">
+                      <img
+                        src={`https://flagcdn.com/20x15/${row.geo.toLowerCase()}.png`}
+                        alt={props.data.label}
+                        className="inline mr-2"
+                      />
+                  </td>)}
               <td className="py-3 px-6 flex items-center gap-2"> 
                 { props.isPrompt &&(
                   <div className="relative group inline-block">

@@ -103,9 +103,13 @@ const analyzeprompt = async (req, res) => {
       try {
             const gpt5Response = await openai.responses.create({
                     model: "gpt-5-mini",
-          tools: [
-              { type: "web_search" },
-          ],
+            tools: [{
+                type: "web_search",
+                user_location: {
+                    type: "approximate",
+                    country: item.geo || "CA" // Default to Canada if geo not provided
+                }
+            }],
           input: [
             {
               role: "system",
@@ -133,7 +137,7 @@ const analyzeprompt = async (req, res) => {
           {      snapshots: {
         gpt5: gptOutput
         // gemini: geminiOutput,
-      }, content: item.content,count:item.count }
+      }, content: item.content,count:item.count,geo:item.geo }
         );
         return updated;
 

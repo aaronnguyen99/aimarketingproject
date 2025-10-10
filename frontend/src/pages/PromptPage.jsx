@@ -61,11 +61,12 @@ const fetchResponse = async () => {
     setTimeout(() => setNotification(""), 5000);
 };
     // 🔑 function to add data
-    const addData = async (promptText) => {
+    const addData = async (promptText,country) => {
       try {
         const response = await api.post("/prompt/create",
           { 
-            content: promptText 
+            content: promptText,
+            geo: country 
           }
         );
         setNotification("Prompt created successfully!");

@@ -9,6 +9,7 @@ const promptSchema=new mongoose.Schema(
             gemini: { type: String, default: "No existing snapshot." }    
             // you can add more models later
         },
+        geo:{type:String,required:true,default:"CA"},
     },
     {
         timestamps:true
