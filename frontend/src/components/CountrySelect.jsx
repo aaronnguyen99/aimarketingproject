@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import Select, { components } from "react-select";
 import countryList from "react-select-country-list";
 
@@ -24,12 +25,18 @@ const SingleValue = (props) => (
 );
 
 export default function CountrySelect({ onChange }) {
-  const options = countryList().getData(); // [{ label: "Canada", value: "CA" }, ...]
-
+  // [{ label: "Canada", value: "CA" }, ...]
+const options = useMemo(() => {
+  const list = countryList().getData();
+  const canada = list.find(c => c.value === "CA");
+  const usa= list.find(c => c.value === "US");
+  const others = list.filter(c => c.value !== "CA"&& c.value !== "US");
+  return [canada,usa, ...others];
+}, []);
   return (
     <Select
       options={options}
-      onChange={onChange}
+      onChange={(onChange)}
       components={{ Option, SingleValue }}
       placeholder="Select a country"
     />

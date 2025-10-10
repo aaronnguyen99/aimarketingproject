@@ -3,18 +3,13 @@ import CountrySelect from "./CountrySelect";
 
 const AddPromptModal = ({ isOpen, onClose, onAdd }) => {
   const [prompt, setPrompt] = useState("");
-const countries = [
-  { name: "Canada", code: "CA" },
-  { name: "United States", code: "US" },
-];
-const getFlag = (countryCode) =>
-  countryCode
-    .toUpperCase()
-    .replace(/./g, char => String.fromCodePoint(127397 + char.charCodeAt()));
+  const [country, setCountry] = useState("CA");
+
   const handleAdd = () => {
     if (!prompt.trim()) return; // don't add empty prompt
-    onAdd(prompt);
+    onAdd(prompt,country);
     setPrompt(""); // reset textarea
+    setCountry("CA"); // reset country
     onClose(); // close modal
   };
 
@@ -40,7 +35,9 @@ const getFlag = (countryCode) =>
                      text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
                      focus:border-blue-500 transition duration-200 resize-none break-words"
         />
-        {/* <CountrySelect/> */}
+        <CountrySelect
+              onChange={(e) => setCountry(e.value)}
+        />
         <div className="flex mt-9 ">
           {/* Add button */}
           <button

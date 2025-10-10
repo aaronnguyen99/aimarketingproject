@@ -2,11 +2,11 @@ const Prompt=  require("../schema/PromptModel")
 
 const createPrompt = (newPrompt,userId) => {
     return new Promise(async(resolve,reject) => {
-        const {content}=newPrompt        
+        const {content,geo}=newPrompt        
 
         try{
             const newPrompt=await Prompt.create({
-                userId,content
+                userId,content,geo
             })
             if(newPrompt)
             {
