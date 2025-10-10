@@ -106,8 +106,17 @@ const analyzeprompt = async (req, res) => {
           tools: [
               { type: "web_search" },
           ],
-          input:item.content,
-        });
+          input: [
+            {
+              role: "system",
+              content: "Always answer directly; no clarifying questions."
+            },
+            {
+              role: "user",
+              content: item.content
+            }
+          ]        
+          });
         const gptOutput = gpt5Response.output_text || "No output";
         // const geminiOutput = geminiResponse.text || "No output";
 
@@ -122,11 +131,10 @@ const analyzeprompt = async (req, res) => {
         const updated = await PromptService.updatePrompt(
           item._id,
           {      snapshots: {
-        gpt5: gptOutput,
+        gpt5: gptOutput
         // gemini: geminiOutput,
       }, content: item.content,count:item.count }
         );
-
         return updated;
 
       } catch (err) {

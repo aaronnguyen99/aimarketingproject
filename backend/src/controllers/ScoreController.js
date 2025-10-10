@@ -1,4 +1,5 @@
 const vader = require('vader-sentiment')
+const { pipeline } = require('@xenova/transformers');
 const { all } = require("../routes/ScoreRouter");
 const Score=  require("../schema/ScoreModel")
 const Company=  require("../schema/CompanyModel")
@@ -39,7 +40,7 @@ const getScoreDashboard = async (req, res) => {
               date: "$createdAt"
             }
           },
-            dailyAverage: { $avg: { $toDouble: "$visible" } },
+            dailyAverage: { $avg: { $toDouble: "$visibleScore" } },
             dailyPosition: { $avg: { $toDouble: "$position" } },
             dailySentiment: { $avg: { $toDouble: "$sentiment" } },
             count: { $sum: 1 }
@@ -80,7 +81,7 @@ const getLastScore = async (req, res) => {
         {
           $group: {
             _id: "$companyId",
-            avgVisibility: { $avg: { $toDouble: "$visible" } },
+            avgVisibility: { $avg: { $toDouble: "$visibleScore" } },
             avgPosition: { $avg: { $toDouble: "$position" } },
             avgSentiment: { $avg: { $toDouble: "$sentiment" } }
           }
@@ -126,8 +127,6 @@ const analyzeCompanyScores = async (req, res) => {
     const companies = companiesResponse.data;
     const promptsResponse = await PromptService.getAllPrompt(req.userId);
     const prompts = promptsResponse.data.filter(prompt => prompt.snapshots);
-console.log("comapny",companies);
-console.log("prompt",promptsResponse);
 
     if ( !companies.length||!prompts.length) {
       return res.status(200).json({
@@ -156,29 +155,64 @@ for (const prompt of prompts) {
       const companyName = company.name.toLowerCase();
       const companySentences = sentences.filter(s => s.includes(companyName));
 
-      let sentiment, position, visible;
+      let sentiment, position, visible,visibleScore;
+      const sentimentPipeline = await pipeline('sentiment-analysis');
       if (companySentences.length > 0) {
-        const sentiments = companySentences.map(s =>
-          (vader.SentimentIntensityAnalyzer.polarity_scores(s).compound + 1) / 2
-        );
-        sentiment = sentiments.reduce((a, b) => a + b, 0) / sentiments.length;
+        //VISIBILITY SCORE
+        const baseScore = 0.3; 
+        const freqScore = Math.min(companySentences.length , 5)/5 * 0.3;
+        const depth = companySentences.reduce((total, s) => total + s.length, 0);
+        const depthScore = (depth / snapshot.length) * 0.4; 
+        console.log(depthScore)
+        visibleScore = baseScore + freqScore + depthScore;
+        //POSITION SCORE
+        const indices = [];
+        const numParts = 10;
+        const partSize = snapshot.length / numParts;
 
-        const check = snapshot.indexOf(companyName);
-        position = (1 - check / snapshot.length) * 10;
-        visible = true;
+        let index = snapshot.indexOf(companyName);
+
+        while (index !== -1) {
+          indices.push(index);
+          index = snapshot.indexOf(companyName, index + companyName.length);
+        }
+        const avg= indices.reduce((a, b) => a + b, 0) / indices.length;
+        const weightedRatio=(indices[0]*0.7+avg*0.3)/ snapshot.length;
+        const placeScore=9.0*(1-weightedRatio);
+        const partsWithCompany = new Set(
+          indices.map(i => Math.floor(i / partSize))
+        );
+        const distScore = (partsWithCompany.size / 9) * 0.11;
+        position = placeScore*(1+distScore);
+        
+        //SENTIMENT SCORE
+        const sentiments = [];
+        for (const s of companySentences) {
+          const result = await sentimentPipeline(s);
+          const { label, score } = result[0];
+          const signed = label === 'NEGATIVE' ? -score : score;
+          sentiments.push(signed);
+        }
+
+        // Average sentiment (-1 to +1)
+        sentiment =sentiments.reduce((a, b) => a + b, 0) / sentiments.length;
+        sentiment = (sentiment + 1) / 2; // normalize to 0-1
+
+
+
       } else {
-        sentiment = 0.5;
+        sentiment = 0.35;
         position = 0;
-        visible = false;
+        visibleScore=0;
       }
 
       scores.push({
         promptId: prompt._id,
         companyId: company._id,
         model,          // track which model this score comes from
-        visible,
         position,
         sentiment,
+        visibleScore
       });
     }
   }
