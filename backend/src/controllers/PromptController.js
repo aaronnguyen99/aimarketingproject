@@ -96,6 +96,7 @@ function extractBrackets(text) {
 const analyzeprompt = async (req, res) => {
   try {
     const response = await PromptService.getAllPrompt(req.userId);
+    console.log("Fetched prompts for analysis:", response.data);
     const prompts = response.data;
 
     // Process all prompts concurrently for maximum speed
@@ -151,7 +152,7 @@ const analyzeprompt = async (req, res) => {
     const results = await Promise.all(
       prompts.map(processPrompt)
     );
-
+    console.log("Analysis results:", results);
     // Filter out failed requests (null values)
     const updatedPrompts = results.filter(item => item !== null);
 
