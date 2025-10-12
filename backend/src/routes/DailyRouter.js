@@ -28,7 +28,7 @@ router.post("/analyze", async (req, res) => {
     await pMap(proUsers, async (user) => {
     const fakeReq = { user, userId: user._id };
     const fakeRes = { json: () => {}, status: () => ({ json: () => {} }) };
-    await PromptController.analyzeprompt(fakeReq, fakeRes);
+    // await PromptController.analyzeprompt(fakeReq, fakeRes);
     await ScoreController.analyzeCompanyScores(fakeReq, fakeRes);
     }, { concurrency});
 
