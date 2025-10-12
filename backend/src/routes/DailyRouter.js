@@ -22,7 +22,7 @@ router.post("/analyze", async (req, res) => {
         }
     ]
     });
-    const concurrency = 2;
+    const concurrency = 5;
 
     // Process analyzePrompt concurrently with p-map
     await pMap(proUsers, async (user) => {
