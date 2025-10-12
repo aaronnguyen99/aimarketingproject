@@ -139,7 +139,7 @@ const analyzeCompanyScores = async (req, res) => {
     const scores = [];
 
 const models = ["gpt5"]; 
-
+const sentimentPipeline = await pipeline('sentiment-analysis');
 for (const prompt of prompts) {
   for (const model of models) {
     const snapshot = (prompt.snapshots[model] || "").toLowerCase();
@@ -156,7 +156,6 @@ for (const prompt of prompts) {
       const companySentences = sentences.filter(s => s.includes(companyName));
 
       let sentiment, position, visible,visibleScore;
-      const sentimentPipeline = await pipeline('sentiment-analysis');
       if (companySentences.length > 0) {
         //VISIBILITY SCORE
         const baseScore = 0.3; 
