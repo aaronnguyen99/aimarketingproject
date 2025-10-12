@@ -22,14 +22,14 @@ router.post("/analyze", async (req, res) => {
         }
     ]
     });
-    const concurrency = 5;
+    const concurrency = 2;
 
     // Process analyzePrompt concurrently with p-map
     await pMap(proUsers, async (user) => {
     const fakeReq = { user, userId: user._id };
     const fakeRes = { json: () => {}, status: () => ({ json: () => {} }) };
     await PromptController.analyzeprompt(fakeReq, fakeRes);
-    }, { concurrency: 5 });
+    }, { concurrency: 2 });
 
     // Process analyzeCompanyScores concurrently with p-map
     await pMap(proUsers, async (user) => {
