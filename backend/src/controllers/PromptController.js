@@ -3,6 +3,8 @@ const PromptService=require('../services/PromptService.js')
 const SourceService=require('../services/SourceService.js')
 const OpenAI = require("openai");
 const { GoogleGenAI } = require("@google/genai");
+const pMapModule = require("p-map");
+const pMap = pMapModule.default || pMapModule; 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
@@ -148,9 +150,10 @@ const analyzeprompt = async (req, res) => {
       }
     };
 
-    // Process all prompts simultaneously
-    const results = await Promise.all(
-      prompts.map(processPrompt)
+    const results = await pMap(
+      prompts,
+      async (item) => await processPrompt(item),
+      { concurrency: 2 } // run only 2 prompts at a time
     );
     console.log("Analysis results:", results);
     // Filter out failed requests (null values)
