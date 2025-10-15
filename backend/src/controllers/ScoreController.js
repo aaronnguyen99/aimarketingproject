@@ -162,7 +162,6 @@ for (const prompt of prompts) {
         const freqScore = Math.min(companySentences.length , 5)/5 * 0.3;
         const depth = companySentences.reduce((total, s) => total + s.length, 0);
         const depthScore = (depth / snapshot.length) * 0.4; 
-        console.log(depthScore)
         visibleScore = baseScore + freqScore + depthScore;
         //POSITION SCORE
         const indices = [];
@@ -183,7 +182,6 @@ for (const prompt of prompts) {
         );
         const distScore = (partsWithCompany.size / 9) * 0.11;
         position = placeScore*(1+distScore);
-        
         //SENTIMENT SCORE
         const sentiments = [];
         for (const s of companySentences) {
@@ -196,7 +194,6 @@ for (const prompt of prompts) {
         // Average sentiment (-1 to +1)
         sentiment =sentiments.reduce((a, b) => a + b, 0) / sentiments.length;
         sentiment = (sentiment + 1) / 2; // normalize to 0-1
-
 
 
       } else {
