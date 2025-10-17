@@ -98,7 +98,6 @@ function extractBrackets(text) {
 const analyzeprompt = async (req, res) => {
   try {
     const response = await PromptService.getAllPrompt(req.userId);
-    console.log("Fetched prompts for analysis:", response.data);
     const prompts = response.data;
 
     // Process all prompts concurrently for maximum speed
@@ -142,6 +141,9 @@ const analyzeprompt = async (req, res) => {
         // gemini: geminiOutput,
       }, content: item.content,count:item.count,geo:item.geo }
         );
+        gpt5Response.output_text = null;
+        item.content = null;
+        if (global.gc) global.gc?.();
         return updated;
 
       } catch (err) {
@@ -150,19 +152,16 @@ const analyzeprompt = async (req, res) => {
       }
     };
 
-    const results = await pMap(
-      prompts,
-      async (item) => await processPrompt(item),
-      { concurrency: 2 } // run only 2 prompts at a time
-    );
-    console.log("Analysis results:", results);
-    // Filter out failed requests (null values)
-    const updatedPrompts = results.filter(item => item !== null);
+    let success = 0;
+    await pMap(prompts, async (item) => {
+      const updated = await processPrompt(item);
+      if (updated) success++;
+    }, { concurrency: 2 });
 
     return res.status(200).json({
       status: "OK",
       message: "Analysis complete",
-      data: updatedPrompts,
+      processed: success,
     });
 
   } catch (e) {

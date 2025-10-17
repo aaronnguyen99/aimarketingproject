@@ -38,9 +38,11 @@ router.post("/signup", async (req, res) => {
 
     // Set HTTP-only cookie
     res.cookie("token", token, {
+      path: '/',
       httpOnly: true,
       secure: true, // true in production with HTTPS
       sameSite: "none",
+      domain: '.meiryo.ca',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -71,10 +73,11 @@ router.post('/login', async (req, res) => {
     
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET,{ expiresIn: "7d" });
     res.cookie("token", token, {
+      path: '/',
       httpOnly: true,
-      // secure: process.env.NODE_ENV === "production", // false on localhost
       secure:true,
-      sameSite: "none", // can be "strict" if frontend/backend same origin
+      sameSite: "none", 
+      domain: '.meiryo.ca',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.json({user: { id: user._id, email: user.email, name: user.name } });

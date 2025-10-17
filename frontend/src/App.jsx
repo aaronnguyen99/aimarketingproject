@@ -20,7 +20,6 @@ export default function App() {
         login(response.data.user); // restore state
         console.log("respone",response.data.user);
       } catch (err) {
-        logout(); // user not logged in
       } finally {
         setLoading(false);
       }
