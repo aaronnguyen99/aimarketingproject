@@ -25,7 +25,7 @@ routes(app);
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Catch-all: redirect all unknown routes to index.html
-app.get(/.*/, (req, res) => {
+app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 // --- API route example ---
