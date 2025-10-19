@@ -42,7 +42,6 @@ router.post("/signup", async (req, res) => {
       httpOnly: true,
       secure: true, // true in production with HTTPS
       sameSite: "none",
-      domain: '.meiryo.ca',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -77,7 +76,6 @@ router.post('/login', async (req, res) => {
       httpOnly: true,
       secure:true,
       sameSite: "none", 
-      domain: '.meiryo.ca',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.json({user: { id: user._id, email: user.email, name: user.name } });
