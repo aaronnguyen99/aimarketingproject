@@ -39,8 +39,11 @@ const Dashboard = () => {
       }else{
         time="afternoon";
       }
-
-      const des="Good "+time+ ", " +user.name+"! Here's how " +user.organization+ " is showing up in AI Search"
+      let first =""
+      if(user.name){
+        const firstName=user.name.split(" ")[0];
+        first=", "+firstName[0].toUpperCase()+firstName.slice(1).toLowerCase();}
+      const des="Good "+time+ first+"! Here's how " +user.organization+ " is showing up in AI Search"
       setDescription(des)
       } catch (error) {
         console.error('Error:', error);
@@ -223,10 +226,9 @@ const downloadCSV = (data, filename = "scores.csv") => {
             <SortTable
                 data={dataTable}
                 columns={[  
-                            { key: 'domain', title: 'Domain' },
-                            { key: 'avgVisibility', title: 'Visible' },
-                            { key: 'avgPosition', title: 'Position' },
-                            { key: 'avgSentiment', title: 'Sentiment' },
+                            { key: 'avgVisibility', title: 'Visibility' },
+                            // { key: 'avgPosition', title: 'Position' },
+                            // { key: 'avgSentiment', title: 'Sentiment' },
                             ]}
                 defaultSort={{ key: 'avgVisibility', title: 'Visible' }}
                 />
@@ -397,8 +399,8 @@ const downloadCSV = (data, filename = "scores.csv") => {
             <SortTable
               data={sources}
               columns={[  { key: 'url', title: 'Domain' },
-                          { key: 'count', title: 'Count' }]}
-              defaultSort={{ key: 'count', title: 'Count' }}
+                          { key: 'count', title: 'Total Use' }]}
+              defaultSort={{ key: 'count', title: 'Total Use' }}
               />
             </div>
         </div>

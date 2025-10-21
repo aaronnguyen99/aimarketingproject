@@ -99,9 +99,24 @@ const getAllCompany = (userId) => {
         }
     })
 }
+const getYourCompany= (userId) => {
+    return new Promise(async(resolve,reject) => {
+        try{
+            const allCompany=await Company.find({userId:userId,isYour:true})
+                resolve({
+                    status:'OK',
+                    message:"Get All Company Success",
+                    data:allCompany,
+                })
+        }catch(e){
+            reject(e)
+        }
+    })
+}
 module.exports={
     createCompany,
     updateCompany,
     deleteCompany,
-    getAllCompany
+    getAllCompany,
+    getYourCompany
 }
