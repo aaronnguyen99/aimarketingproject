@@ -21,13 +21,19 @@ const createSource = (userId,newSource) => {
         }
     })
 }
-const getAllSource = (userId) => {
+const getAllSource = (userId,page,limit) => {
     return new Promise(async(resolve,reject) => {
         try{
+            const skip = (page - 1) * limit;
             const allSource=await Source.find({userId:userId})
+                .sort({ count: -1})
+                .skip(skip)
+                .limit(limit)
+            const total=await Source.countDocuments({ userId: userId })
                 resolve({
                     status:'OK',
                     message:"Get All Source Success",
+                    totalPages: Math.ceil(total / limit),
                     data:allSource,
                 })
         }catch(e){
@@ -51,39 +57,26 @@ const getTop5 = (userId) => {
         }
     })
 }
-const update = async (userId, url) => {
-    const existing = await Source.findOne({ url });
-    
-    if (existing) {
-        return await Source.findByIdAndUpdate(
-            existing._id,
-            { $inc: { count: 1 } },
-            { new: true }
-        );
-    } else {
-        return await Source.create({
-            userId,
-            url,
-            count: 1
-        });
-    }
-};
-const updateArticle = async (userId, url) => {
-    const existing = await Source.findOne({ url });
-    
-    if (existing) {
-        return await Source.findByIdAndUpdate(
-            existing._id,
-            { $inc: { count: 1 } },
-            { new: true }
-        );
-    } else {
-        return await Source.create({
-            userId,
-            url,
-            count: 1
-        });
-    }
+const update = async (userId, url, recentArticle) => {
+  const existing = await Source.findOne({ url });
+
+  if (existing) {
+    return await Source.findByIdAndUpdate(
+      existing._id,
+      { 
+        $inc: { count: 1 },
+        $set: { recentArticle, updatedAt: new Date() }
+      },
+      { new: true } 
+    );
+  } else {
+    return await Source.create({
+      userId,
+      url,
+      recentArticle,
+      count: 1
+    });
+  }
 };
 
 module.exports={

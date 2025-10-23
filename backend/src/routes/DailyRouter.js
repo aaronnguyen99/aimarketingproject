@@ -30,6 +30,7 @@ router.post("/analyze", async (req, res) => {
     const fakeRes = { json: () => {}, status: () => ({ json: () => {} }) };
     await PromptController.analyzeprompt(fakeReq, fakeRes);
     await ScoreController.analyzeCompanyScores(fakeReq, fakeRes);
+    await ScoreController.analyzeText(fakeReq, fakeRes);
     }, { concurrency});
 
     res.json({ success: true, message: `Ran for ${proUsers.length} users` });

@@ -13,18 +13,27 @@ const SortTable = ({
   loading
 }) => {
   const [sortConfig, setSortConfig] = React.useState(defaultSort);
-  const sortedData = React.useMemo(() => {
-    if (!sortConfig.key) return data;
+  
+const sortedData = React.useMemo(() => {
+  if (!sortConfig.key) return data;
 
-    return [...data].sort((a, b) => {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
+  const parseValue = (val) => {
+    if (typeof val === 'string' && val.endsWith('%')) {
+      return parseFloat(val.replace('%', ''));
+    }
+    if (!isNaN(val)) return Number(val);
+    return String(val).toLowerCase();
+  };
 
-      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }, [data, sortConfig]);
+  return [...data].sort((a, b) => {
+    const aValue = parseValue(a[sortConfig.key]);
+    const bValue = parseValue(b[sortConfig.key]);
+
+    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+}, [data, sortConfig]);
 
   const handleSort = (key) => {
     setSortConfig(prev => ({
