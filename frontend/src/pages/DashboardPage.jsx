@@ -168,7 +168,7 @@ const downloadCSV = (data, filename = "scores.csv") => {
   const headers = ["Date"];
   universities.forEach(u => {
     headers.push(`${u} Visibility`);
-    headers.push(`${u} Position`);
+    headers.push(`${u} Priority`);
     headers.push(`${u} Sentiment`);
   });
 
@@ -204,7 +204,7 @@ const downloadCSV = (data, filename = "scores.csv") => {
         <div className="mb-8 ">
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600 mt-2">{description}</p>
-             <div className="p-4 flex justify-between w-full border-b border-gray-300">
+             <div className="mt-4 flex justify-between w-full border-b border-gray-300">
               <div className="gap-6 mb-8">
                 <select
                   multiple={false}
@@ -295,7 +295,7 @@ const downloadCSV = (data, filename = "scores.csv") => {
           {/* Line Chart */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
                         <div className='flex justify-between mb-6'>
-            <h3 className="text-lg font-semibold text-gray-900">Position Trend</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Priority Trend</h3>
             <div className="relative group inline-block">
               <button className="">
                 <span class="text-blue-600 text-2xl">ⓘ</span>
@@ -344,14 +344,14 @@ const downloadCSV = (data, filename = "scores.csv") => {
           </div>
                     <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className='flex justify-between mb-6'>
-            <h3 className="text-lg font-semibold text-gray-900">Sentiment Trend</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{analysis.schoolName} Sentiment Score</h3>
             <div className="relative group inline-block">
               <button className="">
                 <span class="text-blue-600 text-2xl">ⓘ</span>
             </button>
               <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block
                 rounded-md bg-gray-800 text-white text-sm px-2 py-1 whitespace-nowrap">
-            VADER sentiment analysis of the schools mentioned in AI responses              </span>
+            Transformer sentiment analysis of your school analyzed by Gemini             </span>
             </div>
             </div>
             {loading ? (
