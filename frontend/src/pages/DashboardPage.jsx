@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, PieChart, Pie, Cell,Radar, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend } from 'recharts';
 import { Users, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import { useEffect } from 'react';
@@ -16,14 +16,15 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({ name: "", email: "", phone: "" ,organization:"",address:"",tier:""});
   const [description,setDescription]=useState("")
+  const [analysis,setAnalysis]= useState([]);
   const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#b6379aff', '#b66363ff', '#361529ff', '#f70098ff', '#5a0e0eff', '#00ff15ff', '#8c00e9ff', '#8b5cf6'];
   const timeRange=[
+    {key:"week", value:7,name:"Last week"},
+    {key:"2week", value:14,name:"Last 2 weeks"},
+    {key:"month", value:30,name:"Last month"},
+    {key:"year", value:365,name:"Last year"},
     {key:"all", value:1000,name:"All time"},
-    {key:"today", value:1,name:"Today"},
-    {key:"3days", value:3,name:"Last 3 days"},
-    {key:"week", value:7,name:"This week"},
-    {key:"month", value:30,name:"This month"},
-    {key:"year", value:365,name:"This year"},
+
   ]
     const [time, setTime] = useState(timeRange[0].value); // default selected value
 
@@ -59,6 +60,15 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
+      const fetchAnalysis = async () => {
+      try {
+        const response = await api.get('/score/getlastanalyze');
+        setAnalysis(response.data.data.analysis);
+        console.log("testing chart",response.data.data.analysis);
+      } catch (err) {
+        setError("Failed to load user data");
+      }
+    };
   const fetchTable = async () => {
       try {
       let range="?time=1000";
@@ -92,6 +102,7 @@ const Dashboard = () => {
   fetchUser();
   fetchCompanies();
   fetchSources();
+  fetchAnalysis();
 }, []);
 useEffect(() => {
   if (companies && companies.length > 0) {
@@ -221,18 +232,6 @@ const downloadCSV = (data, filename = "scores.csv") => {
 
         </div>
 
-
-            <div className="bg-white p-4 rounded-lg shadow-sm border mt-8 mb-4">
-            <SortTable
-                data={dataTable}
-                columns={[  
-                            { key: 'avgVisibility', title: 'Visibility' },
-                            // { key: 'avgPosition', title: 'Position' },
-                            // { key: 'avgSentiment', title: 'Sentiment' },
-                            ]}
-                defaultSort={{ key: 'avgVisibility', title: 'Visible' }}
-                />
-            </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className='flex justify-between mb-6'>
@@ -284,7 +283,15 @@ const downloadCSV = (data, filename = "scores.csv") => {
             </ResponsiveContainer>
             )}
           </div>
-
+            <div className="bg-white p-4 rounded-lg shadow-sm border">
+            <SortTable
+                data={dataTable}
+                columns={[  
+                            { key: 'avgVisibility', title: 'Visibility' }
+                            ]}
+                defaultSort={{ key: 'avgVisibility', title: 'Visibility' }}
+                />
+            </div>
           {/* Line Chart */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
                         <div className='flex justify-between mb-6'>
@@ -352,36 +359,56 @@ const downloadCSV = (data, filename = "scores.csv") => {
                 <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500 border-b-4 border-gray-300"></div>
               </div>
             ) : (
-           <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={chart}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="_id" />
-            <YAxis
-              tick={{ fontSize: 12 }}
-              domain={[0, 1.0]}
-              tickFormatter={(value) => {
-                const num = Array.isArray(value) ? value[2] : value;
-                return `${(num * 100).toFixed(1)}%`;
-              }}
-            />
-                <Tooltip formatter={(value, name) => [`${(value * 100).toFixed(1)}%`, name]} />
+          //  <ResponsiveContainer width="100%" height={250}>
+          //     <LineChart data={chart}>
+          //       <CartesianGrid strokeDasharray="3 3" />
+          //       <XAxis dataKey="_id" />
+          //   <YAxis
+          //     tick={{ fontSize: 12 }}
+          //     domain={[0, 1.0]}
+          //     tickFormatter={(value) => {
+          //       const num = Array.isArray(value) ? value[2] : value;
+          //       return `${(num * 100).toFixed(1)}%`;
+          //     }}
+          //   />
+          //       <Tooltip formatter={(value, name) => [`${(value * 100).toFixed(1)}%`, name]} />
 
-                {companies.map((company, index) => (
-                <Line 
-                  key={company._id}
-                  type="monotone" 
-                dataKey={(d) =>
-                  Array.isArray(d[company.name]) ? d[company.name][2] : d[company.name]
-                }                  
-                name={company.name}
-                stroke={colors[index % colors.length]}
-                  strokeWidth={2}
-                  dot={{ fill: colors[index % colors.length], strokeWidth: 2, r: 4 }}
-                />
-              ))}
+          //       {companies.map((company, index) => (
+          //       <Line 
+          //         key={company._id}
+          //         type="monotone" 
+          //       dataKey={(d) =>
+          //         Array.isArray(d[company.name]) ? d[company.name][2] : d[company.name]
+          //       }                  
+          //       name={company.name}
+          //       stroke={colors[index % colors.length]}
+          //         strokeWidth={2}
+          //         dot={{ fill: colors[index % colors.length], strokeWidth: 2, r: 4 }}
+          //       />
+          //     ))}
 
-              </LineChart>
-            </ResponsiveContainer>
+          //     </LineChart>
+          //   </ResponsiveContainer>
+            <div className="bg-white rounded-lg shadow-xl p-8">
+              <ResponsiveContainer width="100%" height={300}>
+                <RadarChart data={analysis.radarData}>
+                  <PolarGrid stroke="#0e2446ff" />
+                  <PolarAngleAxis 
+                    dataKey="topic" 
+                    tick={{ fill: '#374151', fontSize: 12 }}
+                  />
+                  <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#6b7280' }} />
+                  <Radar
+                    name="Sentiment Score"
+                    dataKey="score"
+                    stroke="#4f46e5"
+                    fill="#4f46e5"
+                    fillOpacity={0.5}
+                  />
+                  <Legend />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
             )}
           </div>
           <div className="bg-white p-6 rounded-lg shadow-sm border">    

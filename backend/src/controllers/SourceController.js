@@ -2,7 +2,9 @@ const SourceService=require('../services/SourceService.js')
 
 const getAllSource=async(req,res)=>{
     try{
-        const response=await SourceService.getAllSource(req.userId)
+         const page = parseInt(req.query.page) || 1; // default to page 1
+        const limit = parseInt(req.query.limit) || 20; // default 10 per page
+        const response=await SourceService.getAllSource(req.userId,page,limit)
         return res.status(200).json(response)
     }catch(e){
         return res.status(404).json({

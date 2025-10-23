@@ -93,8 +93,18 @@ return res.status(200).json({ count: totalCount });
     }
 }
 function extractBrackets(text) {
-  return (text.match(/\[([^\]]*)\]/g) || []).map(match => match.slice(1, -1));
-}
+  const regex = /\(\[([^\]]+)\]\(([^)]+)\)\)/g; // matches ([domain](url))
+  const results = [];
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    const url = match[1].trim();
+    const recentArticle = match[2].trim();
+
+    results.push({ url, recentArticle });
+  }
+
+  return results;}
 const analyzeprompt = async (req, res) => {
   try {
     const response = await PromptService.getAllPrompt(req.userId);
@@ -128,8 +138,8 @@ const analyzeprompt = async (req, res) => {
 
         const source=extractBrackets(gptOutput);
 
-            for(const url of source){
-                await SourceService.update(req.userId,url);
+            for(const { url, recentArticle } of source){
+                await SourceService.update(req.userId,url,recentArticle);
             }
 
         // Update prompt in database

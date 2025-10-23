@@ -10,12 +10,19 @@ const SourcesPage = () => {
   const [sources, setSources] = useState([]);
   const [count,setCount]=useState(0);
   const [loading, setLoading] = useState(true);
-
-
+  const [page,setPage]=useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+  const limit=20;
+   const handlePrev = () => setPage((prev) => Math.max(prev - 1, 1));
+  const handleNext = () => setPage((prev) => Math.min(prev + 1, totalPages));
   const fetchSources = async () => {
     try {
-        const response = await api.get('/source/getall');
+      const response = await api.get('/source/getall', {
+        params: { page, limit }
+      });
         setSources(response.data.data); 
+        console.log("source",response)
+        setTotalPages(response.data.totalPages || 1);
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -35,7 +42,9 @@ const SourcesPage = () => {
   fetchSources();
   fetchCount();
 }, []);
-
+  useEffect(() => {
+    fetchSources();
+  }, [page]);
   return (
 
     <div className="min-h-screen bg-gray-50 p-6">
@@ -50,11 +59,25 @@ const SourcesPage = () => {
           data={sources}
           columns={[
             { key: 'url', title: 'Domain' },
-            { 
+            {
+              key: 'recentArticle',
+              title: 'Last Used',
+              render: (value, row) => (
+                <a
+                  href={row.recentArticle}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  {row.recentArticle?.length > 50
+                    ? row.recentArticle.slice(0, 50) + '…'
+                    : row.recentArticle || '—'}
+                </a>
+              ),
+            },            { 
               key: 'count', 
               title: 'Average usage', 
               render: (value, row) => {
-                // Use another field from the row to divide
                 if (!count || count === 0) return 0;
                 return ((row.count || 0) /count).toFixed(1) ;
               }
@@ -64,6 +87,25 @@ const SourcesPage = () => {
           loading={loading}
           defaultSort={{ key: 'count', title: 'Count' }}
         />
+      </div>
+            <div className="flex items-center justify-between mt-4">
+        <button
+          onClick={handlePrev}
+          disabled={page === 1}
+          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+        >
+          ← Prev
+        </button>
+        <span>
+          Page <strong>{page}</strong> of {totalPages}
+        </span>
+        <button
+          onClick={handleNext}
+          disabled={page === totalPages}
+          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Next →
+        </button>
       </div>
       </div>
     </div>  

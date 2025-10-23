@@ -7,6 +7,7 @@ router.post('/analyze',checkTier,ScoreController.analyzeCompanyScores)
 router.get('/getdashboard',ScoreController.getScoreDashboard)
 router.get('/getlast',ScoreController.getLastScore)
 router.post('/analyzetext',ScoreController.analyzeText)
+router.get('/getlastanalyze',ScoreController.getLastAnalyze)
 
 
 module.exports=router

@@ -9,6 +9,7 @@ const gemini = new GoogleGenAI({
 });
 const PromptService=require('../services/PromptService.js')
 const CompanyService=require('../services/CompanyService.js')
+const AnalysisService=require('../services/AnalysisService.js')
 const { default: mongoose } = require("mongoose");
 
   const TOPICS = [
@@ -84,6 +85,16 @@ const getScoreDashboard = async (req, res) => {
     });
   }
 };
+const getLastAnalyze=async(req,res)=>{
+    try{
+        const response=await AnalysisService.getLastAnalysis(req.userId)
+        return res.status(200).json(response)
+    }catch(e){
+        return res.status(404).json({
+            message:e
+        })
+    }
+}
 const getLastScore = async (req, res) => {
   try {
     const {time} = req.query;
@@ -153,6 +164,7 @@ const snapshots = promptsResponse.data
   .map(prompt => prompt.snapshots[models[0]]);
     const inputText=snapshots.join(", ");
     const schoolName=companies[0].name;
+
 
     if (!inputText.trim() || !schoolName.trim()) {
       return;
@@ -225,7 +237,8 @@ DO NOT include any text outside the JSON structure. NO markdown formatting, NO b
       
       // Strip any markdown formatting
       analysisText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      
+      console.log("school",analysisText)
+
       const analysis = JSON.parse(analysisText);
 
       // Calculate overall score (average of discussed topics)
@@ -253,16 +266,19 @@ DO NOT include any text outside the JSON structure. NO markdown formatting, NO b
           });
         })
         .map(rule => rule.name);
-      return res.status(200).json({
-        status: "OK",
-        message: `Analysis complete.`,
-        data: {
+        const analyzed={
           analysis,
           overallScore,
           radarData,
           traits,
           schoolName
         }
+        const respone=await AnalysisService.createAnalysis(req.userId,companies[0]._id,analyzed)
+
+      return res.status(200).json({
+        status: "OK",
+        message: `Analysis complete.`,
+        data: respone
       });
 
     } catch (err) {
@@ -399,6 +415,7 @@ module.exports={
     analyzeCompanyScores,
     getScoreDashboard,
     getLastScore,
-    analyzeText
+    analyzeText,
+    getLastAnalyze
 
 }
