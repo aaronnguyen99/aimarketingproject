@@ -33,6 +33,8 @@ const TRAIT_RULES = [
   { name: 'Specialized Programs', conditions: { curriculum: 80 } },
   { name: 'Vibrant Campus', conditions: { campus_life: 80 } }
 ];
+const models = ["gpt5","gemini"]; 
+
 const getScoreDashboard = async (req, res) => {
   try {
     const { companyId ,time} = req.query; // 👈 comes from /api/scores?promptId=123
@@ -157,12 +159,15 @@ const analyzeText = async (req,res) => {
       const companiesResponse = await CompanyService.getYourCompany(req.userId);
     const companies = companiesResponse.data;
     const promptsResponse = await PromptService.getAllPrompt(req.userId);
-const models = ["gpt5"];
 
 const snapshots = promptsResponse.data
-  .filter(prompt => prompt.snapshots?.[models[0]])
-  .map(prompt => prompt.snapshots[models[0]]);
+  .flatMap(prompt => 
+    models
+      .map(model => prompt.snapshots?.[model])
+      .filter(Boolean) // remove undefined
+  );
     const inputText=snapshots.join(", ");
+    
     const schoolName=companies[0].name;
 
 
@@ -305,7 +310,6 @@ DO NOT include any text outside the JSON structure. NO markdown formatting, NO b
     
     const scores = [];
 
-const models = ["gpt5"]; 
 const sentimentPipeline = await pipeline('sentiment-analysis');
 for (const prompt of prompts) {
   for (const model of models) {

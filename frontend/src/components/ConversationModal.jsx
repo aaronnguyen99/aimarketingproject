@@ -5,12 +5,12 @@ import SnapshotSelector from "./SnapshotSelector";
 
 const ConversationModal = ({ isOpen, onClose ,data}) => {
   const [prompt, setPrompt] = useState("");
-  const [selectedModel, setSelectedModel] = useState("gpt5");
+const models = ["gpt5","gemini"];
+  const [selectedModel, setSelectedModel] = useState(models[0]);
 
 const normalizeMarkdown = (text) => {
   console.log(text);
   return text.replace(/#+(?=\S)/g, (match) => match + " "); 
-  // ensures "#Heading" → "# Heading"
 };
   if (!isOpen) return null;
 
@@ -21,7 +21,7 @@ const normalizeMarkdown = (text) => {
     <button
       onClick={() => {
           onClose();               // close the modal
-          setSelectedModel('gpt5'); // reset selected model
+          setSelectedModel(models[0]); // reset selected model
         }}
 
       className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white shadow hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition"
@@ -40,10 +40,10 @@ const normalizeMarkdown = (text) => {
         </p>
       </div>
     <div className="p-4">
-      {/* <SnapshotSelector
+      <SnapshotSelector
         snapshots={data.snapshots}
         onSelect={setSelectedModel}
-      /> */}
+      />
     </div>
       {/* Result */}
       <div className="p-6 border-l-4 border-emerald-500 rounded-xl bg-white shadow-sm prose prose-gray max-w-none">

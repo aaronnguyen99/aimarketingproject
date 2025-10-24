@@ -10,7 +10,14 @@ const openai = new OpenAI({
 });
 const gemini = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY
-});
+}); const TAGS = [
+  { id: 'university', name: 'University / Academic', description: 'Official university or college website (e.g., .edu, .ac)' },
+  { id: 'news', name: 'News / Media', description: 'News outlets or education media reporting on schools' },
+  { id: 'organization', name: 'Professional / Industry Organization', description: 'Associations or career organizations (e.g., NACE, AACSB)' },
+  { id: 'government', name: 'Government / Public Sector', description: 'Official government or education ministry sites (e.g., .gov)' },
+  { id: 'reference', name: 'Encyclopedia / Reference', description: 'Knowledge bases like Wikipedia or educational databases' },
+  { id: 'general', name: 'General Website / Blog', description: 'Other sources like forums, review sites, or blogs' }
+];
 const createPrompt=async(req,res)=>{
     try{
         const {content}=req.body        
@@ -92,6 +99,7 @@ return res.status(200).json({ count: totalCount });
         })
     }
 }
+
 function extractBrackets(text) {
   const regex = /\(\[([^\]]+)\]\(([^)]+)\)\)/g; // matches ([domain](url))
   const results = [];
@@ -133,8 +141,23 @@ const analyzeprompt = async (req, res) => {
             }
           ]        
           });
+          const groundingTool = {
+            googleSearch: {},
+          };
+
+          const config = {
+            tools: [groundingTool],
+          };
+
+          const geminiResponse = await gemini.models.generateContent({
+            model: "gemini-2.5-flash-lite",
+            contents: item.content,
+            config,
+          });
+
+
         const gptOutput = gpt5Response.output_text || "No output";
-        // const geminiOutput = geminiResponse.text || "No output";
+        const geminiOutput = geminiResponse.text || "No output";
 
         const source=extractBrackets(gptOutput);
 
@@ -147,11 +170,12 @@ const analyzeprompt = async (req, res) => {
         const updated = await PromptService.updatePrompt(
           item._id,
           {      snapshots: {
-        gpt5: gptOutput
-        // gemini: geminiOutput,
+        gpt5: gptOutput,
+        gemini: geminiOutput,
       }, content: item.content,count:item.count,geo:item.geo }
         );
         gpt5Response.output_text = null;
+        geminiResponse.text=null;
         item.content = null;
         if (global.gc) global.gc?.();
         return updated;
