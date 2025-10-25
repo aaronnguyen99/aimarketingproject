@@ -5,12 +5,12 @@ import SnapshotSelector from "./SnapshotSelector";
 
 const ConversationModal = ({ isOpen, onClose ,data}) => {
   const [prompt, setPrompt] = useState("");
-const models = ["gpt5","gemini"];
+const models = ["gpt5","gemini"]
   const [selectedModel, setSelectedModel] = useState(models[0]);
 
 const normalizeMarkdown = (text) => {
-  console.log(text);
   return text.replace(/#+(?=\S)/g, (match) => match + " "); 
+  // ensures "#Heading" → "# Heading"
 };
   if (!isOpen) return null;
 
@@ -51,7 +51,7 @@ const normalizeMarkdown = (text) => {
         <ReactMarkdown      components={{
     a: ({ node, ...props }) => {
       // Extract the domain for the favicon
-      const url = props.href || "";
+      const url = props.children || "";
       const domain = (() => {
         try {
           return new URL(url).hostname;
