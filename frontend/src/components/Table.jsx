@@ -75,7 +75,10 @@ if(props.loading) return     <div className="flex justify-center py-4">
             </th>)}
             <th className="py-3 px-6">{!props.isPrompt ? "Date added" :"Created"}</th>
             {props.isPrompt&&(<th className="py-3 px-6">
-              {"GEO"}
+              {"MODELS"}
+            </th>)}
+            {props.isPrompt&&(<th className="py-3 px-6">
+              {"COUNTRY"}
             </th>)}
             <th className="py-3 px-6">Options</th>
           </tr>
@@ -112,6 +115,25 @@ if(props.loading) return     <div className="flex justify-center py-4">
                   month: "short",
                   day: "numeric"
               })}</td>
+              {props.isPrompt && (
+                <td className="flex py-3 px-6 border-r border-solid border-gray-200">
+                  <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                    <img
+                      src="https://www.svgrepo.com/show/306500/openai.svg"
+                      alt={props.data.label}
+                      className="w-4 h-4"
+                    />
+                  </div>
+                  <div className="ml-1 w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                    <img
+                      src="https://registry.npmmirror.com/@lobehub/icons-static-png/1.74.0/files/dark/gemini-color.png"
+                      alt={props.data.label}
+                      className="w-4 h-4"
+                    />
+                  </div>
+                </td>
+              )}
+
                 {props.isPrompt&&(
                   <td className="py-3 px-6  border-r-1 border-solid border-gray-200">
                       <img
