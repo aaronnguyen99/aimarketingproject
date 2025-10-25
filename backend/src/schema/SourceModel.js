@@ -5,7 +5,8 @@ const sourceSchema=new mongoose.Schema(
         url:{type:String,required:true},
         count:{type:Number,required:true},
         countArticle:{type:Number,required:true,default:0},
-        recentArticle:{type:String}
+        recentArticle:{type:String},
+        tag: { type: mongoose.Schema.Types.Mixed},
     },
     {
         timestamps:true
