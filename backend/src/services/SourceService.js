@@ -58,7 +58,7 @@ const getTop5 = (userId) => {
     })
 }
 const update = async (userId, url, recentArticle) => {
-  const existing = await Source.findOne({ url });
+  const existing = await Source.findOne({userId, url });
 
   if (existing) {
     return await Source.findByIdAndUpdate(
