@@ -413,6 +413,9 @@ const downloadCSV = (data, filename = "scores.csv") => {
             </div>
             )}
           </div>
+
+            </div>
+            <div className="w-full mt-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border">    
               <div className='flex justify-between mb-6'>
             <h3 className="text-lg font-semibold text-gray-900">Top 5 Sources</h3>
@@ -425,14 +428,32 @@ const downloadCSV = (data, filename = "scores.csv") => {
             Most sources used across AI models              </span>
             </div>
             </div>        
-            <SortTable
-              data={sources}
-              columns={[  { key: 'url', title: 'Domain' },
-                          { key: 'count', title: 'Total Use' }]}
-              defaultSort={{ key: 'count', title: 'Total Use' }}
+              <SortTable
+                data={sources}
+                columns={[
+                  { key: 'url', title: 'Domain' },
+              {
+              key: 'recentArticle',
+              title: 'Last Used',
+              render: (value, row) => (
+                <a
+                  href={row.recentArticle}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  {row.recentArticle?.length > 50
+                    ? row.recentArticle.slice(0, 50) + '…'
+                    : row.recentArticle || '—'}
+                </a>
+              ),
+            },  
+                  { key: 'count', title: 'Total Use' }
+                ]}
+                defaultSort={{ key: 'count', title: 'Total Use' }}
               />
             </div>
-        </div>
+            </div>
         </div>
       </div>
     </div>
