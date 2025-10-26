@@ -8,6 +8,7 @@ export default function Sidebar() {
   const navItems = [
     { name: "Dashboard", icon: "📊" ,nav:"/dashboard"},
     { name: "Prompts", icon: "💬" ,nav:"/prompt"},
+    { name: "Reports", icon: "💬" ,nav:"/report"},
     { name: "Sources", icon: "🌐",nav:"/source" },
     { name: "Schools", icon: "🏢" ,nav:"/company"},
     { name: "Setting", icon: "⚙️" ,nav:"/setting"},

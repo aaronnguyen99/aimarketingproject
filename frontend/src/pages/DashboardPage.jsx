@@ -405,6 +405,8 @@ const downloadCSV = (data, filename = "scores.csv") => {
                     fill="#4f46e5"
                     fillOpacity={0.5}
                   />
+                  <Tooltip formatter={(value, name) => [`${value.toFixed(1)}`, name]} />
+
                   <Legend />
                 </RadarChart>
               </ResponsiveContainer>

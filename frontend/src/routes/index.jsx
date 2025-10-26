@@ -5,10 +5,17 @@ import PromptPage from "../pages/PromptPage";
 import SourcesPage from "../pages/SourcesPage";
 import SettingPage from "../pages/SettingPage";
 import LoadingPage from "../pages/LoadingPage";
+import ReportPage from "../pages/ReportPage";
 export const routes=[
     {
         path:'/company',
         page:CompanyPage,
+        isShowSidebar:true
+
+    },   
+    {
+        path:'/report',
+        page:ReportPage,
         isShowSidebar:true
 
     },
