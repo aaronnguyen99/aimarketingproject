@@ -344,7 +344,7 @@ const downloadCSV = (data, filename = "scores.csv") => {
           </div>
                     <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className='flex justify-between mb-6'>
-            <h3 className="text-lg font-semibold text-gray-900">{analysis.schoolName} Sentiment Score</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Sentiment Score</h3>
             <div className="relative group inline-block">
               <button className="">
                 <span class="text-blue-600 text-2xl">ⓘ</span>
@@ -399,7 +399,7 @@ const downloadCSV = (data, filename = "scores.csv") => {
                   />
                   <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#6b7280' }} />
                   <Radar
-                    name="Sentiment Score"
+                    name={analysis.schoolName} 
                     dataKey="score"
                     stroke="#4f46e5"
                     fill="#4f46e5"
