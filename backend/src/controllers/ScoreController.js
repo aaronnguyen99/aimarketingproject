@@ -13,14 +13,14 @@ const AnalysisService=require('../services/AnalysisService.js')
 const { default: mongoose } = require("mongoose");
 
   const TOPICS = [
-  { id: 'career', name: 'Career Outcomes & Job Placement', color: '#3b82f6' },
-  { id: 'reputation', name: 'Academic Reputation & Rankings', color: '#8b5cf6' },
-  { id: 'curriculum', name: 'Program Curriculum & Specializations', color: '#ec4899' },
+  { id: 'career', name: 'Employability', color: '#3b82f6' },
+  { id: 'reputation', name: 'Reputation', color: '#8b5cf6' },
+  { id: 'curriculum', name: 'Academic Curriculum', color: '#ec4899' },
   { id: 'alumni', name: 'Alumni Network', color: '#f59e0b' },
   { id: 'location', name: 'Campus Location', color: '#10b981' },
   { id: 'tuition', name: 'Tuition & Financial Aid', color: '#06b6d4' },
   { id: 'campus_life', name: 'Campus Life', color: '#6366f1' },
-  { id: 'resources', name: 'Resources & Experiential Learning', color: '#14b8a6' }
+  { id: 'resources', name: 'Practicality', color: '#14b8a6' }
 ];
 
 const TRAIT_RULES = [
