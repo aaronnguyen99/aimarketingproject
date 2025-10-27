@@ -88,7 +88,7 @@ const sortedData = React.useMemo(() => {
                                <span>{row.name || row.companyName}</span>
                          {row.isYour && (
           <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-            Your School
+            You
           </span>
         )}           
                   </div>

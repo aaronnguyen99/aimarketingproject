@@ -102,7 +102,7 @@ if(props.loading) return     <div className="flex justify-center py-4">
                   <span>{row.name}</span>
                   {row.isYour && (
                     <span className="inline-flex items-center justify-center text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full whitespace-nowrap">
-                      Your School
+                      You
                     </span>
                   )}                
                   </div>
