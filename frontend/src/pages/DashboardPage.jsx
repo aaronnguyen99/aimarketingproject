@@ -283,15 +283,18 @@ const downloadCSV = (data, filename = "scores.csv") => {
             </ResponsiveContainer>
             )}
           </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
-            <SortTable
+          <div className="bg-white p-4 rounded-lg shadow-sm border">
+            <div className="max-h-80 overflow-y-auto">
+              <SortTable
                 data={dataTable}
-                columns={[  
-                            { key: 'avgVisibility', title: 'Visibility' }
-                            ]}
+                columns={[
+                  { key: 'avgVisibility', title: 'Visibility' }
+                ]}
                 defaultSort={{ key: 'avgVisibility', title: 'Visibility' }}
-                />
+              />
             </div>
+          </div>
+
           {/* Line Chart */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
                         <div className='flex justify-between mb-6'>
@@ -396,8 +399,10 @@ const downloadCSV = (data, filename = "scores.csv") => {
                   <PolarAngleAxis 
                     dataKey="topic" 
                     tick={{ fill: '#374151', fontSize: 12 }}
+                    radius={210}
+
                   />
-                  <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#6b7280' }} />
+                  <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#6b7280', fontSize: 8 }} />
                   <Radar
                     name={analysis.schoolName} 
                     dataKey="score"
