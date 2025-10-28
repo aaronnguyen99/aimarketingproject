@@ -1,7 +1,7 @@
 import React from 'react'
 import api from '../services/api';
 import { useEffect,useState } from 'react';
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer } from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer, Tooltip } from 'recharts';
 import { BarChart3, TrendingUp, Award } from 'lucide-react';
 import LoadingPage from './LoadingPage';
 const ReportPage = () => {
@@ -61,14 +61,15 @@ const ReportPage = () => {
               <h3 className="text-xl font-bold text-gray-800 mb-6">Comprehensive Analysis</h3>
               <ResponsiveContainer width="100%" height={500}>
                 <RadarChart data={analysis.radarData}>
-                  <PolarGrid stroke="#d1d5db" />
+                  <PolarGrid stroke="#0e2446ff" />
                   <PolarAngleAxis 
                     dataKey="topic" 
-                    tick={{ fill: '#374151', fontSize: 12 }}
+                    tick={{ fill: '#374151', fontSize: 13 }}
+
                   />
-                  <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#6b7280' }} />
+                  <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#6b7280', fontSize: 10 }}/>
                   <Radar
-                    name="Sentiment Score"
+                    name={analysis.schoolName} 
                     dataKey="score"
                     stroke="#4f46e5"
                     fill="#4f46e5"
